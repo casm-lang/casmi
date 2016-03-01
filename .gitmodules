@@ -1,0 +1,12 @@
+[submodule "lib/casm-fe"]
+	path = lib/casm-fe
+	url = git@github.com:fhahn/libcasm-frontend
+[submodule "lib/pass"]
+	path = lib/pass
+	url = git@github.com:ppaulweber/libpass
+[submodule "lib/stdhl"]
+	path = lib/stdhl
+	url = git@github.com:ppaulweber/libstdhl
+[submodule "lib/casm-ir"]
+	path = lib/casm-ir
+	url = git@github.com:ppaulweber/libcasm-ir

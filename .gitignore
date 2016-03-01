@@ -1,0 +1,5 @@
+.attic
+.gimasy
+casmi
+obj
+var/example/*.dot*
