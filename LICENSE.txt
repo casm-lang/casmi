@@ -3,7 +3,7 @@ Copyright (c) 2016 Philipp Paulweber
 All rights reserved.
 
 Developed by: Philipp Paulweber
-              https://github.com/ppaulweber/gilapt
+              https://github.com/ppaulweber/casmi
 
 This software is licensed under the Open Software License v. 3.0 (OSL-3.0).
 You either find the license text below or in the root directory of this 
