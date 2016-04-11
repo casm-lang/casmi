@@ -10,3 +10,6 @@
 [submodule "lib/stdhl"]
 	path = lib/stdhl
 	url = git@github.com:ppaulweber/libstdhl
+[submodule "lib/casm-tc"]
+	path = lib/casm-tc
+	url = git@github.com:ppaulweber/libcasm-tc.git
