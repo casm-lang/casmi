@@ -147,34 +147,44 @@ int main( int argc, const char *argv[] )
 	{
 		options.error( 1, "no input file provided" );
 	}
+
+
+	// TODO: FIXME: the following code should be implemented in the PassManager structure
+	// to allow dynamic and possible pass calls etc. 
 	
 	libpass::PassResult x;
 	x.getResults()[ 0 ] = (void*)file_name;
 	x.getResults()[ (void*)1 ] = (void*)output_name;
-	
-	libcasm_fe::SourceToAstPass a;
-	libcasm_fe::TypeCheckPass b;
-	libcasm_fe::AstDumpPass c;
-	
-	libcasm_ir::AstToCasmIRPass d; 
-	libcasm_ir::CasmIRDumpPass e; 
-	
-	if( !a.run( x ) )
-	{
-		return -1;
-	}
-
-	if( !b.run( x ) )
+		
+	libcasm_fe::SourceToAstPass src2ast;
+	if( !src2ast.run( x ) )
 	{
 		return -1;
 	}
 	
-	c.run( x );
+	libcasm_fe::TypeCheckPass ast_type;
+	if( !ast_type.run( x ) )
+	{
+		return -1;
+	}
+	
+	libcasm_fe::AstDumpPass ast_dump;
+	ast_dump.run( x );
     
-	d.run( x );
+	libcasm_ir::AstToCasmIRPass ast2ir; 
+	ast2ir.run( x );
 	
-	printf( "\n===--- DUMPING CASM IR ---===\n" );
-	e.run( x );
+	//libcasm_ir::CasmIRDumpPass ir_dump; 
+    //printf( "\n===--- DUMPING CASM IR ---===\n" );
+	//ir_dump.run( x );
+	
+	libcasm_fe::NumericExecutionPass ast_num;
+	printf( "\n===--- NUMERIC EXECUTION (AST) ---===\n" );
+	ast_num.run( x );
+
+	//libcasm_fe::SymbolicExecutionPass ast_sym;
+	//printf( "\n===--- SYMBOLIC EXECUTION (AST) ---===\n" );
+	//ast_sym.run( x );
 	
     return 0;
 }
