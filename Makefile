@@ -20,7 +20,7 @@
 #   GNU General Public License for more details.
 #   
 #   You should have received a copy of the GNU General Public License
-#   along with this program. If not, see <http://www.gnu.org/licenses/>.
+#   along with casmi. If not, see <http://www.gnu.org/licenses/>.
 #   
 
 CPP=clang
@@ -35,24 +35,20 @@ TARGET=casmi
 OBJECTS += obj/casmi.o
 OBJECTS += obj/PassManager.o
 
+
 INCLUDE += -I src
 INCLUDE += -I src/ir
 INCLUDE += -I obj
-INCLUDE += -I lib/casm-fe/src
-INCLUDE += -I lib/casm-fe/obj/src
-INCLUDE += -I lib/casm-ir/src
-INCLUDE += -I lib/casm-ir/src/analyze
-INCLUDE += -I lib/casm-ir/src/transform
-INCLUDE += -I lib/casm-rt/src
-INCLUDE += -I lib/pass/src
+INCLUDE += -I lib/casm-fe
+INCLUDE += -I lib/casm-ir
+INCLUDE += -I lib/pass
 
 INCLUDE += -I lib
-#INCLUDE += -I lib/stdhl/c
 
 LIBRARY  = lib/stdhl/libstdhlc.a
 LIBRARY += lib/stdhl/libstdhlcpp.a
+LIBRARY += lib/casm-fe/libcasm-fe.a
 LIBRARY += lib/casm-ir/libcasm-ir.a
-LIBRARY += lib/casm-fe/obj/libfrontend.a
 
 
 .PHONY: obj/version.h obj/license.h
@@ -79,10 +75,11 @@ obj/%.o: src/%.c
 	@$(CPP) $(CPPFLAG) $(INCLUDE) -c $< -o $@
 
 
-lib/casm-fe/obj/libfrontend.a: lib/casm-fe
-	@cd $<; $(MAKE)
 
 lib/stdhl/libstdhlc.a lib/stdhl/libstdhlcpp.a: lib/stdhl
+	@cd $<; $(MAKE)
+
+lib/casm-fe/libcasm-fe.a: lib/casm-fe
 	@cd $<; $(MAKE)
 
 lib/casm-ir/libcasm-ir.a: lib/casm-ir
@@ -99,8 +96,6 @@ obj/license.h: obj
 	while IFS= read -r line; do echo "\"    $$line\n\" \\"; done < $@.txt >> $@
 
 $(TARGET): obj/version.h obj/license.h $(LIBRARY) $(OBJECTS)
-# 	make -C lib/casm-fe
-	make -C lib/casm-ir
 	@echo "LD  " $@
 	@$(CPP) $(CPPFLAG) -o $@ $(filter %.o,$^) $(filter %.a,$^) -lstdc++ -lm
 

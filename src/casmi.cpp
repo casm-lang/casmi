@@ -20,26 +20,19 @@
 //  GNU General Public License for more details.
 //  
 //  You should have received a copy of the GNU General Public License
-//  along with this program. If not, see <http://www.gnu.org/licenses/>.
+//  along with casmi. If not, see <http://www.gnu.org/licenses/>.
 //  
+
+#include "version.h"
+#include "license.h"
 
 #include "stdhl/cpp/Default.h"
 #include "stdhl/cpp/Args.h"
 
-#include "Pass.h"
-
+#include "libpass.h"
 #include "libcasm-ir.h"
+#include "libcasm-fe.h"
 
-#include "analyze/AstDumpPass.h"
-#include "analyze/TypeCheckPass.h"
-#include "analyze/CasmIRDumpPass.h"
-
-#include "transform/SourceToAstPass.h"
-#include "transform/AstToCasmIRPass.h"
-
-
-#include "version.h"
-#include "license.h"
 
 
 /**
@@ -159,9 +152,10 @@ int main( int argc, const char *argv[] )
 	x.getResults()[ 0 ] = (void*)file_name;
 	x.getResults()[ (void*)1 ] = (void*)output_name;
 	
-	libcasm_ir::SourceToAstPass a;
-	libcasm_ir::TypeCheckPass b;
-	libcasm_ir::AstDumpPass c;
+	libcasm_fe::SourceToAstPass a;
+	libcasm_fe::TypeCheckPass b;
+	libcasm_fe::AstDumpPass c;
+	
 	libcasm_ir::AstToCasmIRPass d; 
 	libcasm_ir::CasmIRDumpPass e; 
 	

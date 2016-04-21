@@ -20,17 +20,13 @@
 //  GNU General Public License for more details.
 //  
 //  You should have received a copy of the GNU General Public License
-//  along with this program. If not, see <http://www.gnu.org/licenses/>.
+//  along with casmi. If not, see <http://www.gnu.org/licenses/>.
 //  
 
-#ifndef _PASSMANAGER_H_
-#define _PASSMANAGER_H_
+#ifndef _CASMI_PASSMANAGER_H_
+#define _CASMI_PASSMANAGER_H_
 
-#include "Pass.h"
-#include "PassInfo.h"
-#include "PassRegistry.h"
-#include "PassResult.h"
-#include "PassUsage.h"
+#include "libpass.h"
 
 /**
    @brief    TODO
@@ -55,7 +51,7 @@ public:
 	
 };
 
-#endif /* _PASSMANAGER_H_ */
+#endif /* _CASMI_PASSMANAGER_H_ */
 
 
 //  
