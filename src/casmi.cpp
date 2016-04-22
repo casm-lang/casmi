@@ -30,8 +30,8 @@
 #include "stdhl/cpp/Args.h"
 
 #include "libpass.h"
-#include "libcasm-ir.h"
-#include "libcasm-fe.h"
+#include "libcasm-ir.all.h"
+#include "libcasm-fe.all.h"
 
 
 
