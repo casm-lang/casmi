@@ -57,10 +57,11 @@ LIBRARY += lib/casm-ir/libcasm-ir.a
 default: $(TARGET)
 
 
-all: clean doxy default
+all: clean default
+#all: clean doxy default
 
-doxy:
-	doxygen
+#doxy:
+#	doxygen
 
 obj:
 	@echo "MKD " obj
