@@ -171,20 +171,21 @@ int main( int argc, const char *argv[] )
 	libcasm_fe::AstDumpPass ast_dump;
 	ast_dump.run( x );
     
-	//libcasm_ir::AstToCasmIRPass ast2ir; 
-	//ast2ir.run( x );
+	libcasm_fe::NumericExecutionPass ast_num;
+	printf( "\n===--- NUMERIC EXECUTION (AST) ---===\n" );
+	ast_num.run( x );
+	
+	//libcasm_fe::SymbolicExecutionPass ast_sym;
+	//printf( "\n===--- SYMBOLIC EXECUTION (AST) ---===\n" );
+	//ast_sym.run( x );
+	
+	
+	libcasm_ir::AstToCasmIRPass ast2ir; 
+	ast2ir.run( x );
 	
 	//libcasm_ir::CasmIRDumpPass ir_dump; 
     //printf( "\n===--- DUMPING CASM IR ---===\n" );
 	//ir_dump.run( x );
-	
-	libcasm_fe::NumericExecutionPass ast_num;
-	printf( "\n===--- NUMERIC EXECUTION (AST) ---===\n" );
-	ast_num.run( x );
-
-	//libcasm_fe::SymbolicExecutionPass ast_sym;
-	//printf( "\n===--- SYMBOLIC EXECUTION (AST) ---===\n" );
-	//ast_sym.run( x );
 	
     return 0;
 }
