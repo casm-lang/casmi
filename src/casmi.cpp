@@ -181,7 +181,7 @@ int main( int argc, const char *argv[] )
 	
 	
 	libcasm_ir::AstToCasmIRPass ast2ir; 
-	ast2ir.run( x );
+	//ast2ir.run( x );
 	
 	//libcasm_ir::CasmIRDumpPass ir_dump; 
     //printf( "\n===--- DUMPING CASM IR ---===\n" );
