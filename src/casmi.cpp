@@ -47,6 +47,8 @@ int main( int argc, const char *argv[] )
 	const char* file_name = 0;
 	const char* output_name = 0;
 
+	u1 symbolic_execution_flag = false;
+	
 	Args options( argc, argv, Args::ALTERNATE
 	, [&file_name,&options]( const char* arg ) 
 	{
@@ -117,6 +119,12 @@ int main( int argc, const char *argv[] )
 		
 		exit( 0 );
 	});
+
+	options.add( 's', "symbolic", Args::NONE, "TBD symbolic execution"
+	, [&symbolic_execution_flag]( const char* option )
+	{
+		symbolic_execution_flag = true;
+	});
 	
 	for( auto& p : libpass::PassRegistry::getRegisteredPasses() )
 	{
@@ -170,17 +178,21 @@ int main( int argc, const char *argv[] )
 	
 	libcasm_fe::AstDumpPass ast_dump;
 	ast_dump.run( x );
+
+	if( not symbolic_execution_flag )
+	{
+		libcasm_fe::NumericExecutionPass ast_num;
+		printf( "\n===--- NUMERIC EXECUTION (AST) ---===\n" );
+		ast_num.run( x );
+	}
+	else
+	{
+		libcasm_fe::SymbolicExecutionPass ast_sym;
+		printf( "\n===--- SYMBOLIC EXECUTION (AST) ---===\n" );
+		ast_sym.run( x );
+	}
     
-	libcasm_fe::NumericExecutionPass ast_num;
-	printf( "\n===--- NUMERIC EXECUTION (AST) ---===\n" );
-	ast_num.run( x );
-	
-	//libcasm_fe::SymbolicExecutionPass ast_sym;
-	//printf( "\n===--- SYMBOLIC EXECUTION (AST) ---===\n" );
-	//ast_sym.run( x );
-	
-	
-	libcasm_ir::AstToCasmIRPass ast2ir; 
+	//libcasm_ir::AstToCasmIRPass ast2ir; 
 	//ast2ir.run( x );
 	
 	//libcasm_ir::CasmIRDumpPass ir_dump; 
