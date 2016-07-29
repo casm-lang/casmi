@@ -32,17 +32,17 @@ inputs:
   - name: casmi
     path: in/casmi
   - name: gtest
-    path: in/lib/gtest
+    path: in/casmi/lib/gtest
   - name: libstdhl
-    path: in/lib/stdhl
+    path: in/casmi/lib/stdhl
   - name: libpass
-    path: in/lib/pass
+    path: in/casmi/lib/pass
   - name: libcasm-fe
-    path: in/lib/casm-fe
+    path: in/casmi/lib/casm-fe
   - name: libcasm-ir
-    path: in/lib/casm-ir
+    path: in/casmi/lib/casm-ir
   - name: libcasm-tc
-    path: in/lib/casm-tc
+    path: in/casmi/lib/casm-tc
 outputs:
   - name: out
 run:
@@ -52,7 +52,5 @@ run:
     - |
       date
       uname -a
-      rm -rf in/casmi/lib
-      ln -s lib in/casmi/lib
       make -C in/casmi
       cp -rf in/* out/
