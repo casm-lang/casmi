@@ -46,6 +46,8 @@ run:
     - |
       date
       uname -a
+      rm -rf in/casmi/lib
+      mkdir -p in/casmi/lib
       cp -r gtest      in/casmi/lib/gtest
       cp -r libstdhl   in/casmi/lib/stdhl
       cp -r libpass    in/casmi/lib/pass
