@@ -2,4 +2,5 @@
 .gimasy
 casmi
 obj
+test
 var/example/*.dot*

@@ -105,3 +105,27 @@ clean:
 	@rm -f $(TARGET)
 	$(MAKE) clean -C lib/casm-fe
 	$(MAKE) clean -C lib/casm-ir
+	@rm -f test
+
+TEST_FILES   = $(shell find uts -name '*.cpp' | cut -d'.' -f1)
+TEST_OBJECTS = $(TEST_FILES:%=obj/%.o)
+
+TEST_INCLUDE  = -I lib/gtest/googletest/include
+TEST_INCLUDE += -I lib/gtest/googletest
+
+TEST_LIBRARY  = -lstdc++
+TEST_LIBRARY += -lm
+TEST_LIBRARY += -lpthread
+
+obj/uts/%.o: uts/%.cpp
+	@mkdir -p `dirname $@`
+	@echo "CPP " $<
+	@$(CPP) $(CPPFLAG) $(TEST_INCLUDE) $(INCLUDE) -c $< -o $@
+
+test: default obj $(TEST_OBJECTS)
+	@rm -f $@
+	@echo "LD  " $@
+#@$(CPP) $(CPPFLAG) $(TEST_INCLUDE) $(INCLUDE) $(TEST_LIBRARY) -o $@ $(filter %.o,$^) $(TARGET) lib/gtest/googletest/src/gtest-all.cc lib/gtest/googletest/src/gtest_main.cc
+	@$(CPP) $(CPPFLAG) $(TEST_INCLUDE) $(INCLUDE) $(TEST_LIBRARY) -o $@ $(filter %.o,$^) lib/gtest/googletest/src/gtest-all.cc lib/gtest/googletest/src/gtest_main.cc
+	@echo "RUN " $@
+	@./$@
