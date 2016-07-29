@@ -29,8 +29,6 @@ image_resource:
   source:
     repository: ppaulweber/container-cpp-clang
 inputs:
-  - name: in
-outputs:
   - name: out
 run:
   path: sh
@@ -39,6 +37,4 @@ run:
     - |
       date
       uname -a
-      ls -al in/casm-fe in/casm-fe/obj
-
-# make -C in/casm-fe test
+      make -C out/casmi test

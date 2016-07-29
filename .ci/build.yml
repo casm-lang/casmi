@@ -30,6 +30,7 @@ image_resource:
     repository: ppaulweber/container-cpp-clang
 inputs:
   - name: casmi
+    path: in/casmi
 outputs:
   - name: out
 run:
@@ -39,7 +40,5 @@ run:
     - |
       date
       uname -a
-      ls -al casmi casmi/lib/*
-      make -C casmi
-
-#cp -rf in/* out/
+      make -C in/casmi
+      cp -rf in/* out/
