@@ -92,9 +92,7 @@ obj/version.h: obj
 
 obj/license.h: obj
 	@echo "GEN " $@
-	head -n 19 LICENSE.txt > $@.txt
-	echo "#define LICENSE \\" > $@
-	while IFS= read -r line; do echo "\"    $$line\n\" \\"; done < $@.txt >> $@
+	echo "#define LICENSE \"TBD\"" > $@
 
 $(TARGET): obj/version.h obj/license.h $(LIBRARY) $(OBJECTS)
 	@echo "LD  " $@
