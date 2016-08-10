@@ -49,21 +49,29 @@ int main( int argc, const char *argv[] )
 
 	u1 symbolic_execution_flag = false;
 	
-	Args options( argc, argv, Args::ALTERNATE
+	Args options
+	( argc
+	, argv
+	, Args::DEFAULT
 	, [&file_name,&options]( const char* arg ) 
-	{
-		static int cnt = 0;
-		cnt++;
-		
-		if( cnt > 1 )
-		{
-			options.error( 1, "to many file names passed" );
-		}
-		
-		file_name = arg;
-	});
+	  {
+		  static int cnt = 0;
+		  cnt++;
+		  
+		  if( cnt > 1 )
+		  {
+			  options.error( 1, "to many file names passed" );
+		  }
+		  
+		  file_name = arg;
+	  }
+	);
 	
-	options.add( 'o', 0, Args::REQUIRED, "Place the output into <file>"
+	options.add
+	( 'o'
+	, 0
+	, Args::REQUIRED
+	, "Place the output into <file>"
 	, [&options,&output_name]( const char* option )
 	{
 		static int cnt = 0;
@@ -76,13 +84,17 @@ int main( int argc, const char *argv[] )
 		
 		output_name = option;
 	}
-	, "file");
+	, "file"
+	);
 
 #define DESCRIPTION											\
 	"Corinthian Abstract State Machine (CASM) Interpreter\n"
 	
 	options.add
-	( 'h', "help", Args::NONE, "Display the program usage and synoptis"
+	( 'h'
+	, "help"
+	, Args::NONE
+	, "Display the program usage and synoptis"
 	, [&options]( const char* option )
 	{
 		fprintf
@@ -100,31 +112,41 @@ int main( int argc, const char *argv[] )
 		exit( 0 );
 	});
 	
-	options.add( 'v', "version", Args::NONE, "Display interpreter version information"
+	options.add
+	( 'v'
+	, "version"
+	, Args::NONE
+	, "Display interpreter version information"
 	, [&options]( const char* option )
-	{
-		fprintf
-		( stderr
-		, DESCRIPTION
-		  "\n"
-		  "%s: version: %s [ %s %s ]\n"
-		  "\n"
-		  "%s\n"
-		, options.getProgramName()
-		, VERSION
-		, __DATE__
-		, __TIME__
-		, LICENSE
-		);
-		
-		exit( 0 );
-	});
-
-	options.add( 's', "symbolic", Args::NONE, "TBD symbolic execution"
+	  {
+		  fprintf
+		  ( stderr
+		  , DESCRIPTION
+		    "\n"
+		    "%s: version: %s [ %s %s ]\n"
+		    "\n"
+		    "%s\n"
+		  , options.getProgramName()
+		  , VERSION
+		  , __DATE__
+		  , __TIME__
+		  , LICENSE
+		  );
+		  
+		  exit( 0 );
+	  }
+	);
+	
+	options.add
+	( 's'
+	, "symbolic"
+	, Args::NONE
+	, "TBD DESCRIPTION symbolic execution"
 	, [&symbolic_execution_flag]( const char* option )
-	{
-		symbolic_execution_flag = true;
-	});
+	  {
+		  symbolic_execution_flag = true;
+	  }
+	);
 	
 	for( auto& p : libpass::PassRegistry::getRegisteredPasses() )
 	{
