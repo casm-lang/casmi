@@ -30,8 +30,9 @@
 #include "stdhl/cpp/Args.h"
 
 #include "libpass.h"
-#include "libcasm-ir.all.h"
 #include "libcasm-fe.all.h"
+#include "libcasm-ir.all.h"
+#include "libcasm-tc.h"
 
 
 
@@ -66,6 +67,17 @@ int main( int argc, const char *argv[] )
 		  file_name = arg;
 	  }
 	);
+
+	options.add
+	( "tc"
+	, Args::NONE
+	, "Displays the test case unique identifier and exits."
+	, [&options,&output_name]( const char* option )
+	{
+		printf( "%s\n", libcasm_tc::Profile::get( libcasm_tc::Profile::INTERPRETER ) );
+		exit( 0 );
+	}
+	);
 	
 	options.add
 	( 'o'
@@ -94,7 +106,7 @@ int main( int argc, const char *argv[] )
 	( 'h'
 	, "help"
 	, Args::NONE
-	, "Display the program usage and synoptis"
+	, "Display the program usage and synopsis and exits."
 	, [&options]( const char* option )
 	{
 		fprintf

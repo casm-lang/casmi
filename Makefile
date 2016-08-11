@@ -41,6 +41,7 @@ INCLUDE += -I src/ir
 INCLUDE += -I obj
 INCLUDE += -I lib/casm-fe
 INCLUDE += -I lib/casm-ir
+INCLUDE += -I lib/casm-tc
 INCLUDE += -I lib/pass
 
 INCLUDE += -I lib
