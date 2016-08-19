@@ -212,18 +212,22 @@ int main( int argc, const char *argv[] )
 	
 	libcasm_fe::AstDumpPass ast_dump;
 	ast_dump.run( x );
-
+	
 	if( not symbolic_execution_flag )
 	{
 		libcasm_fe::NumericExecutionPass ast_num;
-		printf( "\n===--- NUMERIC EXECUTION (AST) ---===\n" );
-		ast_num.run( x );
+		if( not ast_num.run( x ) )
+		{
+			return -1;
+		}	
 	}
 	else
 	{
 		libcasm_fe::SymbolicExecutionPass ast_sym;
-		printf( "\n===--- SYMBOLIC EXECUTION (AST) ---===\n" );
-		ast_sym.run( x );
+		if( not ast_sym.run( x ) )
+		{
+			return -1;
+		}	
 	}
     
 	//libcasm_ir::AstToCasmIRPass ast2ir; 
