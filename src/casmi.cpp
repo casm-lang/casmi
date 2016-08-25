@@ -157,6 +157,8 @@ int main( int argc, const char *argv[] )
 	, [&symbolic_execution_flag]( const char* option )
 	  {
 		  symbolic_execution_flag = true;
+
+		  // libpass::PassRegistry::getPassId< libcasm_fe::SymbolicExecutionPass >();
 	  }
 	);
 	
@@ -178,7 +180,7 @@ int main( int argc, const char *argv[] )
 		, pi.getPassDescription()
 		, [&pi]( const char* option )
 		{
-			printf( "add: %s:%s\n", pi.getPassName(), option );
+			printf( "add: %s: '%s'\n", pi.getPassName(), option );
 			// add to PassManager the selected pass to run!
 		});
 	}
@@ -209,7 +211,7 @@ int main( int argc, const char *argv[] )
 	{
 		return -1;
 	}
-	
+
 	libcasm_fe::AstDumpPass ast_dump;
 	ast_dump.run( x );
 	
