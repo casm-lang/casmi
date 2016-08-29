@@ -5,7 +5,7 @@
 //  Developed by: Florian Hahn
 //                Philipp Paulweber
 //                Emmanuel Pescosta
-//                https://github.com/ppaulweber/casmi
+//                https://github.com/casm-lang/casmi
 //  
 //  This file is part of casmi.
 //  
