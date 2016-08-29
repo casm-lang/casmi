@@ -45,200 +45,200 @@
 
 int main( int argc, const char *argv[] )
 {
-	const char* file_name = 0;
-	const char* output_name = 0;
+    const char* file_name = 0;
+    const char* output_name = 0;
 
-	u1 symbolic_execution_flag = false;
-	
-	Args options
-	( argc
-	, argv
-	, Args::DEFAULT
-	, [&file_name,&options]( const char* arg ) 
-	  {
-		  static int cnt = 0;
-		  cnt++;
-		  
-		  if( cnt > 1 )
-		  {
-			  options.error( 1, "to many file names passed" );
-		  }
-		  
-		  file_name = arg;
-	  }
-	);
-
-	options.add
-	( "tc"
-	, Args::NONE
-	, "Displays the test case unique identifier and exits."
-	, [&options,&output_name]( const char* option )
-	{
-		printf( "%s\n", libcasm_tc::Profile::get( libcasm_tc::Profile::INTERPRETER ) );
-		exit( 0 );
-	}
-	);
-	
-	options.add
-	( 'o'
-	, 0
-	, Args::REQUIRED
-	, "Place the output into <file>"
-	, [&options,&output_name]( const char* option )
-	{
-		static int cnt = 0;
-		cnt++;
-		
-		if( cnt > 1 )
-		{
-			options.error( 1, "to many output names passed" );
-		}
-		
-		output_name = option;
-	}
-	, "file"
-	);
-
-#define DESCRIPTION											\
-	"Corinthian Abstract State Machine (CASM) Interpreter\n"
-	
-	options.add
-	( 'h'
-	, "help"
-	, Args::NONE
-	, "Display the program usage and synopsis and exits."
-	, [&options]( const char* option )
-	{
-		fprintf
-		( stderr
-		, DESCRIPTION
-		  "\n"
-		  "usage: %s [options] <file>\n"
-		  "\n"
-		  "options:\n"
-		, options.getProgramName()
-		);
-		
-		options.usage();
-		
-		exit( 0 );
-	});
-	
-	options.add
-	( 'v'
-	, "version"
-	, Args::NONE
-	, "Display interpreter version information"
-	, [&options]( const char* option )
-	  {
-		  fprintf
-		  ( stderr
-		  , DESCRIPTION
-		    "\n"
-		    "%s: version: %s [ %s %s ]\n"
-		    "\n"
-		    "%s\n"
-		  , options.getProgramName()
-		  , VERSION
-		  , __DATE__
-		  , __TIME__
-		  , LICENSE
-		  );
-		  
-		  exit( 0 );
-	  }
-	);
-	
-	options.add
-	( 's'
-	, "symbolic"
-	, Args::NONE
-	, "TBD DESCRIPTION symbolic execution"
-	, [&symbolic_execution_flag]( const char* option )
-	  {
-		  symbolic_execution_flag = true;
-
-		  // libpass::PassRegistry::getPassId< libcasm_fe::SymbolicExecutionPass >();
-	  }
-	);
-	
-	for( auto& p : libpass::PassRegistry::getRegisteredPasses() )
-	{
-		//PassId    id = p.first;
-		libpass::PassInfo& pi = *p.second;
-		
-		if( pi.getPassArgChar() == 0 && pi.getPassArgString() == 0 )
-		{
-			// internal pass, do not register a cmd line flag
-			continue;
-		}
-		
-		options.add
-	   	( pi.getPassArgChar()
-		, pi.getPassArgString()
-		, Args::NONE
-		, pi.getPassDescription()
-		, [&pi]( const char* option )
-		{
-			printf( "add: %s: '%s'\n", pi.getPassName(), option );
-			// add to PassManager the selected pass to run!
-		});
-	}
-	
-	options.parse();
-	
-	if( !file_name )
-	{
-		options.error( 1, "no input file provided" );
-	}
-
-
-	// TODO: FIXME: the following code should be implemented in the PassManager structure
-	// to allow dynamic and possible pass calls etc. 
-	
-	libpass::PassResult x;
-	x.getResults()[ 0 ] = (void*)file_name;
-	x.getResults()[ (void*)1 ] = (void*)output_name;
-		
-	libcasm_fe::SourceToAstPass src2ast;
-	if( !src2ast.run( x ) )
-	{
-		return -1;
-	}
-	
-	libcasm_fe::TypeCheckPass ast_type;
-	if( !ast_type.run( x ) )
-	{
-		return -1;
-	}
-
-	libcasm_fe::AstDumpPass ast_dump;
-	ast_dump.run( x );
-	
-	if( not symbolic_execution_flag )
-	{
-		libcasm_fe::NumericExecutionPass ast_num;
-		if( not ast_num.run( x ) )
-		{
-			return -1;
-		}	
-	}
-	else
-	{
-		libcasm_fe::SymbolicExecutionPass ast_sym;
-		if( not ast_sym.run( x ) )
-		{
-			return -1;
-		}	
-	}
+    u1 symbolic_execution_flag = false;
     
-	//libcasm_ir::AstToCasmIRPass ast2ir; 
-	//ast2ir.run( x );
-	
-	//libcasm_ir::CasmIRDumpPass ir_dump; 
+    Args options
+    ( argc
+    , argv
+    , Args::DEFAULT
+    , [&file_name,&options]( const char* arg ) 
+      {
+          static int cnt = 0;
+          cnt++;
+          
+          if( cnt > 1 )
+          {
+              options.error( 1, "to many file names passed" );
+          }
+          
+          file_name = arg;
+      }
+    );
+
+    options.add
+    ( "tc"
+    , Args::NONE
+    , "Displays the test case unique identifier and exits."
+    , [&options,&output_name]( const char* option )
+    {
+        printf( "%s\n", libcasm_tc::Profile::get( libcasm_tc::Profile::INTERPRETER ) );
+        exit( 0 );
+    }
+    );
+    
+    options.add
+    ( 'o'
+    , 0
+    , Args::REQUIRED
+    , "Place the output into <file>"
+    , [&options,&output_name]( const char* option )
+    {
+        static int cnt = 0;
+        cnt++;
+        
+        if( cnt > 1 )
+        {
+            options.error( 1, "to many output names passed" );
+        }
+        
+        output_name = option;
+    }
+    , "file"
+    );
+
+#define DESCRIPTION                                            \
+    "Corinthian Abstract State Machine (CASM) Interpreter\n"
+    
+    options.add
+    ( 'h'
+    , "help"
+    , Args::NONE
+    , "Display the program usage and synopsis and exits."
+    , [&options]( const char* option )
+    {
+        fprintf
+        ( stderr
+        , DESCRIPTION
+          "\n"
+          "usage: %s [options] <file>\n"
+          "\n"
+          "options:\n"
+        , options.getProgramName()
+        );
+        
+        options.usage();
+        
+        exit( 0 );
+    });
+    
+    options.add
+    ( 'v'
+    , "version"
+    , Args::NONE
+    , "Display interpreter version information"
+    , [&options]( const char* option )
+      {
+          fprintf
+          ( stderr
+          , DESCRIPTION
+            "\n"
+            "%s: version: %s [ %s %s ]\n"
+            "\n"
+            "%s\n"
+          , options.getProgramName()
+          , VERSION
+          , __DATE__
+          , __TIME__
+          , LICENSE
+          );
+          
+          exit( 0 );
+      }
+    );
+    
+    options.add
+    ( 's'
+    , "symbolic"
+    , Args::NONE
+    , "TBD DESCRIPTION symbolic execution"
+    , [&symbolic_execution_flag]( const char* option )
+      {
+          symbolic_execution_flag = true;
+
+          // libpass::PassRegistry::getPassId< libcasm_fe::SymbolicExecutionPass >();
+      }
+    );
+    
+    for( auto& p : libpass::PassRegistry::getRegisteredPasses() )
+    {
+        //PassId    id = p.first;
+        libpass::PassInfo& pi = *p.second;
+        
+        if( pi.getPassArgChar() == 0 && pi.getPassArgString() == 0 )
+        {
+            // internal pass, do not register a cmd line flag
+            continue;
+        }
+        
+        options.add
+           ( pi.getPassArgChar()
+        , pi.getPassArgString()
+        , Args::NONE
+        , pi.getPassDescription()
+        , [&pi]( const char* option )
+        {
+            printf( "add: %s: '%s'\n", pi.getPassName(), option );
+            // add to PassManager the selected pass to run!
+        });
+    }
+    
+    options.parse();
+    
+    if( !file_name )
+    {
+        options.error( 1, "no input file provided" );
+    }
+
+
+    // TODO: FIXME: the following code should be implemented in the PassManager structure
+    // to allow dynamic and possible pass calls etc. 
+    
+    libpass::PassResult x;
+    x.getResults()[ 0 ] = (void*)file_name;
+    x.getResults()[ (void*)1 ] = (void*)output_name;
+        
+    libcasm_fe::SourceToAstPass src2ast;
+    if( !src2ast.run( x ) )
+    {
+        return -1;
+    }
+    
+    libcasm_fe::TypeCheckPass ast_type;
+    if( !ast_type.run( x ) )
+    {
+        return -1;
+    }
+
+    libcasm_fe::AstDumpPass ast_dump;
+    ast_dump.run( x );
+    
+    if( not symbolic_execution_flag )
+    {
+        libcasm_fe::NumericExecutionPass ast_num;
+        if( not ast_num.run( x ) )
+        {
+            return -1;
+        }    
+    }
+    else
+    {
+        libcasm_fe::SymbolicExecutionPass ast_sym;
+        if( not ast_sym.run( x ) )
+        {
+            return -1;
+        }    
+    }
+    
+    //libcasm_ir::AstToCasmIRPass ast2ir; 
+    //ast2ir.run( x );
+    
+    //libcasm_ir::CasmIRDumpPass ir_dump; 
     //printf( "\n===--- DUMPING CASM IR ---===\n" );
-	//ir_dump.run( x );
-	
+    //ir_dump.run( x );
+    
     return 0;
 }
 
