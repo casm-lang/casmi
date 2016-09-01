@@ -48,7 +48,8 @@ int main( int argc, const char *argv[] )
     const char* file_name = 0;
     const char* output_name = 0;
 
-    u1 symbolic_execution_flag = false;
+    u1 flag_symbolic_execution = false;
+    u1 flag_ast_dump = false;
     
     Args options
     ( argc
@@ -154,9 +155,9 @@ int main( int argc, const char *argv[] )
     , "symbolic"
     , Args::NONE
     , "TBD DESCRIPTION symbolic execution"
-    , [&symbolic_execution_flag]( const char* option )
+    , [&flag_symbolic_execution]( const char* option )
       {
-          symbolic_execution_flag = true;
+          flag_symbolic_execution = true;
 
           // libpass::PassRegistry::getPassId< libcasm_fe::SymbolicExecutionPass >();
       }
@@ -181,7 +182,7 @@ int main( int argc, const char *argv[] )
         , [&pi]( const char* option )
         {
             printf( "add: %s: '%s'\n", pi.getPassName(), option );
-            // add to PassManager the selected pass to run!
+            // add to PassManager the selected pass to run!			
         });
     }
     
@@ -212,21 +213,24 @@ int main( int argc, const char *argv[] )
         return -1;
     }
 
-    libcasm_fe::AstDumpPass ast_dump;
-    ast_dump.run( x );
-    
-    if( not symbolic_execution_flag )
+    if( flag_ast_dump )
     {
-        libcasm_fe::NumericExecutionPass ast_num;
-        if( not ast_num.run( x ) )
+		libcasm_fe::AstDumpPass ast_dump;
+		ast_dump.run( x );
+    }
+	
+    if( flag_symbolic_execution )
+    {
+        libcasm_fe::SymbolicExecutionPass ast_sym;
+        if( not ast_sym.run( x ) )
         {
             return -1;
         }    
     }
     else
     {
-        libcasm_fe::SymbolicExecutionPass ast_sym;
-        if( not ast_sym.run( x ) )
+        libcasm_fe::NumericExecutionPass ast_num;
+        if( not ast_num.run( x ) )
         {
             return -1;
         }    
