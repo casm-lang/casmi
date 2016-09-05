@@ -50,6 +50,7 @@ int main( int argc, const char *argv[] )
 
     u1 flag_symbolic_execution = false;
     u1 flag_ast_dump = false;
+    u1 flag_dump_updates = false;
     
     Args options
     ( argc
@@ -162,7 +163,18 @@ int main( int argc, const char *argv[] )
           // libpass::PassRegistry::getPassId< libcasm_fe::SymbolicExecutionPass >();
       }
     );
-    
+
+    options.add
+    ( 'd'
+    , "dump-updates"
+    , Args::NONE
+    , "TBD DESCRIPTION dump updates (updateset)"
+    , [&flag_dump_updates]( const char* option )
+      {
+          flag_dump_updates = true;
+      }
+    );
+	
     for( auto& p : libpass::PassRegistry::getRegisteredPasses() )
     {
         //PassId    id = p.first;
@@ -200,7 +212,8 @@ int main( int argc, const char *argv[] )
     libpass::PassResult x;
     x.getResults()[ 0 ] = (void*)file_name;
     x.getResults()[ (void*)1 ] = (void*)output_name;
-        
+    x.getResults()[ (void*)2 ] = (void*)flag_dump_updates;
+	
     libcasm_fe::SourceToAstPass src2ast;
     if( !src2ast.run( x ) )
     {
