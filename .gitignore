@@ -1,6 +1,5 @@
-.attic
-.gimasy
-casmi
-obj
-test
-var/example/*.dot*
+/.attic
+/.gimasy
+/casmi
+/obj
+/test*

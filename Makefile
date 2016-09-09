@@ -30,8 +30,12 @@ default: debug
 help:
 	@echo "TODO"
 
+REPO = casmi
 
-TARGET=casmi
+TARGET = $(REPO)
+
+TEST_TARGET = test-$(REPO)
+
 
 CP  = $(shell find src -name '*.cpp' | cut -d'.' -f1)
 CO  = $(CP:%=obj/%.o)
@@ -157,60 +161,62 @@ obj/casmi.a: $(CO)
 
 $(TARGET): obj/version.h obj/license.h $(CL)
 	@echo "LD  " $@
-	@$(CC) $(CF) -o $@ $(filter %.o,$^) $(filter %.a,$^) -lstdc++ -lm
+	@$(CC) $(CF) -o $@ $(CL) -lstdc++ -lm
 
 clean:
+	$(MAKE) clean -C lib/pass
+	$(MAKE) clean -C lib/stdhl
+	$(MAKE) clean -C lib/casm-fe
+	$(MAKE) clean -C lib/casm-ir
 	@echo "RMD " obj
 	@rm -rf obj
 	@echo "RM  " $(TARGET)
 	@rm -f $(TARGET)
-	$(MAKE) clean -C lib/casm-fe
-	$(MAKE) clean -C lib/casm-ir
-	@rm -f test
+	@echo "RM  " $(TEST_TARGET)
 	@rm -f $(TEST_TARGET)
 
 
-TEST_TARGET = obj/casmi-test.a
+TF   = $(shell find uts -name '*.cpp' | cut -d'.' -f1)
+TO = $(TF:%=obj/%.o)
 
-TEST_FILES   = $(shell find uts -name '*.cpp' | cut -d'.' -f1)
-TEST_OBJECTS = $(TEST_FILES:%=obj/%.o)
+TI  = -I lib/gtest/googletest/include
+TI += -I lib/gtest/googletest
+TS  = lib/gtest/googletest/src/gtest-all.cc
+TS += lib/gtest/googletest/src/gtest_main.cc
 
-TEST_INCLUDE  = -I lib/gtest/googletest/include
-TEST_INCLUDE += -I lib/gtest/googletest
-
-TEST_LIBRARY  = -lstdc++
-TEST_LIBRARY += -lm
-TEST_LIBRARY += -lpthread
+TL  = -lstdc++
+TL += -lm
+TL += -lpthread
 
 obj/uts/%.o: uts/%.cpp
 	@mkdir -p `dirname $@`
 	@echo "C++ " $<
-	@$(CC) $(CF) $(TEST_INCLUDE) $(CI) -c $< -o $@
+	@$(CC) $(CF) $(TI) $(CI) -c $< -o $@
 
-
-$(TEST_TARGET): $(TEST_OBJECTS)
-	@echo "AR  " $@
-	@$(AR) rsc $@ $(filter %.o,$^)
-	@ranlib $@
-
-lib/casm-fe/libcasm-fe-test.a: lib/casm-fe
-	@cd $<; $(MAKE) libcasm-fe-test.a
-
-lib/casm-ir/libcasm-ir-test.a: lib/casm-ir
-	@cd $<; $(MAKE) libcasm-ir-test.a
-
-test: $(CL:%.a=%-test.a)
+$(TEST_TARGET): $(TO) $(CO) $(CL) $(TARGET)
 	@echo "LD  " $@
-	@$(CC) $(CF) $(TEST_INCLUDE) -o $@ $^ $(TEST_LIBRARY) \
-		 lib/gtest/googletest/src/gtest-all.cc lib/gtest/googletest/src/gtest_main.cc 
+	@$(CC) \
+	  $(CF) \
+	  $(TI) \
+	  $(CI) \
+	  $(TL) \
+	  -o $@ \
+	  $(TO) \
+	  $(TS)
 	@echo "RUN " $@
 	@./$@
+	@echo "RUN " $@
+	CASM=`pwd`/$(TARGET) $(MAKE) test-run -C lib/casm-tc
 
-# test: $(TARGET) $(TEST_TARGET) default
-# 	@rm -f $@
-# 	@echo "LD  " $@
-# 	@$(CC) $(CF) $(TEST_INCLUDE) $(CI) $(TEST_LIBRARY) -o $@ \
-# 		-Wl,--whole-archive $(TEST_TARGET) $(TARGET) -Wl,--no-whole-archive \
-# 		 ../gtest/googletest/src/gtest-all.cc ../gtest/googletest/src/gtest_main.cc 
-# 	@echo "RUN " $@
-# 	@./$@
+
+info:
+	@echo $(CWD) 
+
+# # test: $(TARGET) $(TEST_TARGET) default
+# # 	@rm -f $@
+# # 	@echo "LD  " $@
+# # 	@$(CC) $(CF) $(TI) $(CI) $(TL) -o $@ \
+# # 		-Wl,--whole-archive $(TEST_TARGET) $(TARGET) -Wl,--no-whole-archive \
+# # 		 ../gtest/googletest/src/gtest-all.cc ../gtest/googletest/src/gtest_main.cc 
+# # 	@echo "RUN " $@
+# # 	@./$@
