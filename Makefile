@@ -23,81 +23,142 @@
 #   along with casmi. If not, see <http://www.gnu.org/licenses/>.
 #   
 
-CPP=clang
+.PHONY: obj/version.h obj/license.h
 
-CPPFLAG += -std=c++11
-CPPFLAG += -g -O0
-CPPFLAG += -Wall
-#CPPFLAG += -Wextra
+default: debug
+
+help:
+	@echo "TODO"
+
 
 TARGET=casmi
 
-OBJECTS += obj/casmi.o
-OBJECTS += obj/PassManager.o
+CP  = $(shell find src -name '*.cpp' | cut -d'.' -f1)
+CO  = $(CP:%=obj/%.o)
+
+CI  = -I src
+CI += -I src/ir
+CI += -I obj
+CI += -I lib
+CI += -I lib/casm-fe
+CI += -I lib/casm-ir
+CI += -I lib/casm-tc
+CI += -I lib/pass
+
+CL  = obj/casmi.a
+CL += lib/pass/libpass.a
+CL += lib/stdhl/libstdhlc.a
+CL += lib/stdhl/libstdhlcpp.a
+CL += lib/casm-fe/libcasm-fe.a
+CL += lib/casm-ir/libcasm-ir.a
+
+CC  =
+CF  =
+
+  %-gcc: CC = gcc
+%-clang: CC = clang
+
+  debug-%: CF += -O0 -g
+release-%: CF += -O3 -DNDEBUG
+
+linux%:  CF += -Wall -std=c++11
+linux%:  XF += -Wall -std=c11
+linux3%: CF += -m32
+linux6%: CF += -m64
 
 
-INCLUDE += -I src
-INCLUDE += -I src/ir
-INCLUDE += -I obj
-INCLUDE += -I lib/casm-fe
-INCLUDE += -I lib/casm-ir
-INCLUDE += -I lib/casm-tc
-INCLUDE += -I lib/pass
+build: config $(TARGET)
+check: build $(TEST_TARGET)
 
-INCLUDE += -I lib
+linux32-build: build
+linux64-build: build
 
-LIBRARY  = lib/stdhl/libstdhlc.a
-LIBRARY += lib/stdhl/libstdhlcpp.a
-LIBRARY += lib/casm-fe/libcasm-fe.a
-LIBRARY += lib/casm-ir/libcasm-ir.a
+linux32-check: check
+linux64-check: check
 
 
-.PHONY: obj/version.h obj/license.h
+  debug-build-linux32-gcc:   linux32-build
+  debug-check-linux32-gcc:   linux32-check
+release-build-linux32-gcc:   linux32-build
+release-check-linux32-gcc:   linux32-check
+
+  debug-build-linux64-gcc:   linux64-build
+  debug-check-linux64-gcc:   linux64-check
+release-build-linux64-gcc:   linux64-build
+release-check-linux64-gcc:   linux64-check
+
+  debug-build-linux32-clang: linux32-build
+  debug-check-linux32-clang: linux32-check
+release-build-linux32-clang: linux32-build
+release-check-linux32-clang: linux32-check
+
+  debug-build-linux64-clang: linux64-build
+  debug-check-linux64-clang: linux64-check
+release-build-linux64-clang: linux64-build
+release-check-linux64-clang: linux64-check
 
 
-default: $(TARGET)
+  debug:   debug-build-linux64-clang
+release: clean release-build-linux64-clang
+
+test:           debug-check-linux64-clang
+test-release: release-check-linux64-clang
 
 
 all: clean default
-#all: clean doxy default
 
 #doxy:
 #	doxygen
 
-obj:
-	@echo "MKD " obj
-	@mkdir -p obj
-
-obj/%.o: src/%.cpp
-	@echo "CPP " $<
-	@$(CPP) $(CPPFLAG) $(INCLUDE) -c $< -o $@
-
-obj/%.o: src/%.c
-	@echo "CC  " $<
-	@$(CPP) $(CPPFLAG) $(INCLUDE) -c $< -o $@
+config: CFG="CC=$(CC) CF=\"$(CF)\""
+config:
+	@echo "CFG  $(CFG)"
 
 
+obj/%.o: %.cpp
+	@mkdir -p `dirname $@`
+	@echo "C++ " $<
+	@$(CC) $(CF) $(CI) -c $< -o $@
 
-lib/stdhl/libstdhlc.a lib/stdhl/libstdhlcpp.a: lib/stdhl
-	@cd $<; $(MAKE)
+obj/%.o: %.c
+	@mkdir -p `dirname $@`
+	@echo "C   " $<
+	@$(CC) $(CF) $(CI) -c $< -o $@
+
+
+
+lib/pass/libpass.a: lib/pass
+	@cd $<; $(MAKE) build CC="$(CC)" CF="$(CF)"
+
+lib/stdhl/libstdhlcpp.a: lib/stdhl
+	@cd $<; $(MAKE) build CC="$(CC)" CF="$(CF)"
 
 lib/casm-fe/libcasm-fe.a: lib/casm-fe
-	@cd $<; $(MAKE)
+	@cd $<; $(MAKE) build CC="$(CC)" CF="$(CF)"
 
 lib/casm-ir/libcasm-ir.a: lib/casm-ir
-	@cd $<; $(MAKE)
+	@cd $<; $(MAKE) build CC="$(CC)" CF="$(CF)"
 
-obj/version.h: obj
+
+obj/version.h:
+	@mkdir -p `dirname $@`
 	@echo "GEN " $@ 
 	@echo "#define VERSION \""`git describe --always --tags --dirty`"\"" > $@
 
-obj/license.h: obj
+obj/license.h:
+	@mkdir -p `dirname $@`
 	@echo "GEN " $@
 	echo "#define LICENSE \"TBD\"" > $@
 
-$(TARGET): obj/version.h obj/license.h $(LIBRARY) $(OBJECTS)
+obj/casmi.a: $(CO)
+	@echo "AR  " $@
+	@$(AR) rsc $@ $(filter %.o,$^)
+	@ranlib $@
+
+
+$(TARGET): obj/version.h obj/license.h $(CL)
 	@echo "LD  " $@
-	@$(CPP) $(CPPFLAG) -o $@ $(filter %.o,$^) $(filter %.a,$^) -lstdc++ -lm
+	@$(CC) $(CF) -o $@ $(filter %.o,$^) $(filter %.a,$^) -lstdc++ -lm
 
 clean:
 	@echo "RMD " obj
@@ -107,6 +168,10 @@ clean:
 	$(MAKE) clean -C lib/casm-fe
 	$(MAKE) clean -C lib/casm-ir
 	@rm -f test
+	@rm -f $(TEST_TARGET)
+
+
+TEST_TARGET = obj/casmi-test.a
 
 TEST_FILES   = $(shell find uts -name '*.cpp' | cut -d'.' -f1)
 TEST_OBJECTS = $(TEST_FILES:%=obj/%.o)
@@ -120,13 +185,33 @@ TEST_LIBRARY += -lpthread
 
 obj/uts/%.o: uts/%.cpp
 	@mkdir -p `dirname $@`
-	@echo "CPP " $<
-	@$(CPP) $(CPPFLAG) $(TEST_INCLUDE) $(INCLUDE) -c $< -o $@
+	@echo "C++ " $<
+	@$(CC) $(CF) $(TEST_INCLUDE) $(CI) -c $< -o $@
 
-test: default obj $(TEST_OBJECTS)
-	@rm -f $@
+
+$(TEST_TARGET): $(TEST_OBJECTS)
+	@echo "AR  " $@
+	@$(AR) rsc $@ $(filter %.o,$^)
+	@ranlib $@
+
+lib/casm-fe/libcasm-fe-test.a: lib/casm-fe
+	@cd $<; $(MAKE) libcasm-fe-test.a
+
+lib/casm-ir/libcasm-ir-test.a: lib/casm-ir
+	@cd $<; $(MAKE) libcasm-ir-test.a
+
+test: $(CL:%.a=%-test.a)
 	@echo "LD  " $@
-#@$(CPP) $(CPPFLAG) $(TEST_INCLUDE) $(INCLUDE) $(TEST_LIBRARY) -o $@ $(filter %.o,$^) $(TARGET) lib/gtest/googletest/src/gtest-all.cc lib/gtest/googletest/src/gtest_main.cc
-	@$(CPP) $(CPPFLAG) $(TEST_INCLUDE) $(INCLUDE) $(TEST_LIBRARY) -o $@ $(filter %.o,$^) lib/gtest/googletest/src/gtest-all.cc lib/gtest/googletest/src/gtest_main.cc
+	@$(CC) $(CF) $(TEST_INCLUDE) -o $@ $^ $(TEST_LIBRARY) \
+		 lib/gtest/googletest/src/gtest-all.cc lib/gtest/googletest/src/gtest_main.cc 
 	@echo "RUN " $@
 	@./$@
+
+# test: $(TARGET) $(TEST_TARGET) default
+# 	@rm -f $@
+# 	@echo "LD  " $@
+# 	@$(CC) $(CF) $(TEST_INCLUDE) $(CI) $(TEST_LIBRARY) -o $@ \
+# 		-Wl,--whole-archive $(TEST_TARGET) $(TARGET) -Wl,--no-whole-archive \
+# 		 ../gtest/googletest/src/gtest-all.cc ../gtest/googletest/src/gtest_main.cc 
+# 	@echo "RUN " $@
+# 	@./$@
