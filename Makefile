@@ -47,7 +47,6 @@ CI += -I lib/pass
 
 CL  = obj/casmi.a
 CL += lib/pass/libpass.a
-CL += lib/stdhl/libstdhlc.a
 CL += lib/stdhl/libstdhlcpp.a
 CL += lib/casm-fe/libcasm-fe.a
 CL += lib/casm-ir/libcasm-ir.a
