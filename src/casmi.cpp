@@ -174,6 +174,17 @@ int main( int argc, const char *argv[] )
           flag_dump_updates = true;
       }
     );
+
+    options.add
+    ( 'a'
+    , "dump-ast"
+    , Args::NONE
+    , "TBD DESCRIPTION dump AST and exit (will be written to ./obj/out.dot)"
+    , [&flag_ast_dump]( const char* option )
+    {
+        flag_ast_dump = true;
+    }
+    );
 	
     for( auto& p : libpass::PassRegistry::getRegisteredPasses() )
     {
@@ -229,7 +240,7 @@ int main( int argc, const char *argv[] )
     if( flag_ast_dump )
     {
 		libcasm_fe::AstDumpPass ast_dump;
-		ast_dump.run( x );
+		return ast_dump.run( x ) ? 0 : -1;
     }
 	
     if( flag_symbolic_execution )
