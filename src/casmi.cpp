@@ -237,8 +237,8 @@ int main( int argc, const char *argv[] )
         return -1;
     }
 
-    libcasm_fe::UpdatePass updatePass;
-    if( !updatePass.run( x ) )
+    libcasm_fe::UpdatePredictionPass updatePredictionPass;
+    if( !updatePredictionPass.run( x ) )
     {
         return -1;
     }
