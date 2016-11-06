@@ -237,6 +237,12 @@ int main( int argc, const char *argv[] )
         return -1;
     }
 
+    libcasm_fe::UpdatePredictionPass updatePredictionPass;
+    if( !updatePredictionPass.run( x ) )
+    {
+        return -1;
+    }
+
     if( flag_ast_dump )
     {
 		libcasm_fe::AstDumpPass ast_dump;
