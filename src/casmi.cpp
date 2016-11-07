@@ -69,7 +69,7 @@ int main( int argc, const char *argv[] )
           file_name = arg;
       }
     );
-
+	
     options.add
     ( "tc"
     , Args::NONE
@@ -163,7 +163,7 @@ int main( int argc, const char *argv[] )
           // libpass::PassRegistry::getPassId< libcasm_fe::SymbolicExecutionPass >();
       }
     );
-
+	
     options.add
     ( 'd'
     , "dump-updates"
@@ -174,17 +174,7 @@ int main( int argc, const char *argv[] )
           flag_dump_updates = true;
       }
     );
-
-    options.add
-    ( 'a'
-    , "dump-ast"
-    , Args::NONE
-    , "TBD DESCRIPTION dump AST and exit (will be written to ./obj/out.dot)"
-    , [&flag_ast_dump]( const char* option )
-    {
-        flag_ast_dump = true;
-    }
-    );
+	
 	
     for( auto& p : libpass::PassRegistry::getRegisteredPasses() )
     {
@@ -198,14 +188,20 @@ int main( int argc, const char *argv[] )
         }
         
         options.add
-           ( pi.getPassArgChar()
+        ( pi.getPassArgChar()
         , pi.getPassArgString()
         , Args::NONE
         , pi.getPassDescription()
-        , [&pi]( const char* option )
+        , [ &pi, &flag_ast_dump ]( const char* option )
         {
-            printf( "add: %s: '%s'\n", pi.getPassName(), option );
-            // add to PassManager the selected pass to run!			
+            // this will be later done in the pass manager implementation
+            // which resolves pass dependencies etc.
+            // --> for now we make a manual flag management
+            
+            if( pi.getPassId() == &libcasm_fe::AstDumpPass::id )
+			{
+			    flag_ast_dump = true;
+			}
         });
     }
     
