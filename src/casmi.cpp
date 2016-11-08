@@ -46,9 +46,9 @@
 int main( int argc, const char *argv[] )
 {
     const char* file_name = 0;
-    const char* output_name = 0;
+    //const char* output_name = 0;
 
-    u1 flag_symbolic_execution = false;
+    u1 flag_ast_execute_symbolic = false;
     u1 flag_ast_dump = false;
     u1 flag_dump_updates = false;
     
@@ -71,36 +71,19 @@ int main( int argc, const char *argv[] )
     );
 	
     options.add
-    ( "tc"
+    ( 't'
+    , "test-case-profile"
     , Args::NONE
-    , "Displays the test case unique identifier and exits."
-    , [&options,&output_name]( const char* option )
+    , "Display the unique test profile identifier and exit."
+    , [ &options
+		//, &output_name
+	  ]( const char* option )
     {
         printf( "%s\n", libcasm_tc::Profile::get( libcasm_tc::Profile::INTERPRETER ) );
         exit( 0 );
     }
     );
     
-    options.add
-    ( 'o'
-    , 0
-    , Args::REQUIRED
-    , "Place the output into <file>"
-    , [&options,&output_name]( const char* option )
-    {
-        static int cnt = 0;
-        cnt++;
-        
-        if( cnt > 1 )
-        {
-            options.error( 1, "to many output names passed" );
-        }
-        
-        output_name = option;
-    }
-    , "file"
-    );
-
 #define DESCRIPTION                                            \
     "Corinthian Abstract State Machine (CASM) Interpreter\n"
     
@@ -108,7 +91,7 @@ int main( int argc, const char *argv[] )
     ( 'h'
     , "help"
     , Args::NONE
-    , "Display the program usage and synopsis and exits."
+    , "Display the program usage and synopsis and exit."
     , [&options]( const char* option )
     {
         fprintf
@@ -150,19 +133,6 @@ int main( int argc, const char *argv[] )
           exit( 0 );
       }
     );
-    
-    options.add
-    ( 's'
-    , "symbolic"
-    , Args::NONE
-    , "TBD DESCRIPTION symbolic execution"
-    , [&flag_symbolic_execution]( const char* option )
-      {
-          flag_symbolic_execution = true;
-
-          // libpass::PassRegistry::getPassId< libcasm_fe::SymbolicExecutionPass >();
-      }
-    );
 	
     options.add
     ( 'd'
@@ -192,7 +162,10 @@ int main( int argc, const char *argv[] )
         , pi.getPassArgString()
         , Args::NONE
         , pi.getPassDescription()
-        , [ &pi, &flag_ast_dump ]( const char* option )
+        , [ &pi
+		  , &flag_ast_dump
+		  , &flag_ast_execute_symbolic
+		  ]( const char* option )
         {
             // this will be later done in the pass manager implementation
             // which resolves pass dependencies etc.
@@ -201,6 +174,10 @@ int main( int argc, const char *argv[] )
             if( pi.getPassId() == &libcasm_fe::AstDumpPass::id )
 			{
 			    flag_ast_dump = true;
+			}
+			if( pi.getPassId() == &libcasm_fe::SymbolicExecutionPass::id )
+			{
+			    flag_ast_execute_symbolic = true;
 			}
         });
     }
@@ -211,14 +188,14 @@ int main( int argc, const char *argv[] )
     {
         options.error( 1, "no input file provided" );
     }
-
-
+	
+	
     // TODO: FIXME: the following code should be implemented in the PassManager structure
     // to allow dynamic and possible pass calls etc. 
     
     libpass::PassResult x;
     x.getResults()[ 0 ] = (void*)file_name;
-    x.getResults()[ (void*)1 ] = (void*)output_name;
+    //x.getResults()[ (void*)1 ] = (void*)output_name;
     x.getResults()[ (void*)2 ] = (void*)flag_dump_updates;
 	
     libcasm_fe::SourceToAstPass src2ast;
@@ -232,14 +209,14 @@ int main( int argc, const char *argv[] )
     {
         return -1;
     }
-
+	
     if( flag_ast_dump )
     {
 		libcasm_fe::AstDumpPass ast_dump;
 		return ast_dump.run( x ) ? 0 : -1;
     }
 	
-    if( flag_symbolic_execution )
+    if( flag_ast_execute_symbolic )
     {
         libcasm_fe::SymbolicExecutionPass ast_sym;
         if( not ast_sym.run( x ) )
