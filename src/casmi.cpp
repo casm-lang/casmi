@@ -47,11 +47,9 @@ int main( int argc, const char *argv[] )
 {
     const char* file_name = 0;
     //const char* output_name = 0;
-
-    u1 flag_ast_execute_symbolic = false;
-    u1 flag_ast_dump = false;
     u1 flag_dump_updates = false;
-    
+	
+	
     Args options
     ( argc
     , argv
@@ -162,24 +160,8 @@ int main( int argc, const char *argv[] )
         , pi.getPassArgString()
         , Args::NONE
         , pi.getPassDescription()
-        , [ &pi
-		  , &flag_ast_dump
-		  , &flag_ast_execute_symbolic
-		  ]( const char* option )
-        {
-            // this will be later done in the pass manager implementation
-            // which resolves pass dependencies etc.
-            // --> for now we make a manual flag management
-            
-            if( pi.getPassId() == &libcasm_fe::AstDumpPass::id )
-			{
-			    flag_ast_dump = true;
-			}
-			if( pi.getPassId() == &libcasm_fe::SymbolicExecutionPass::id )
-			{
-			    flag_ast_execute_symbolic = true;
-			}
-        });
+		, pi.getPassArgAction()
+		);
     }
     
     options.parse();
@@ -198,40 +180,58 @@ int main( int argc, const char *argv[] )
     //x.getResults()[ (void*)1 ] = (void*)output_name;
     x.getResults()[ (void*)2 ] = (void*)flag_dump_updates;
 	
-    libcasm_fe::SourceToAstPass src2ast;
-    if( !src2ast.run( x ) )
-    {
-        return -1;
-    }
-    
-    libcasm_fe::TypeCheckPass ast_type;
-    if( !ast_type.run( x ) )
-    {
-        return -1;
-    }
 	
-    if( flag_ast_dump )
+	libpass::PassInfo ast_parse = libpass::PassRegistry::getPassInfo< libcasm_fe::SourceToAstPass >();
+    if( ast_parse.constructPass()->run( x ) )
     {
-		libcasm_fe::AstDumpPass ast_dump;
-		return ast_dump.run( x ) ? 0 : -1;
+        if( ast_parse.isPassArgSelected() )
+		{
+			return 0;
+		}
     }
+	else
+	{
+		return -1;
+	}
 	
-    if( flag_ast_execute_symbolic )
+	libpass::PassInfo ast_check = libpass::PassRegistry::getPassInfo< libcasm_fe::TypeCheckPass >();
+    if( ast_check.constructPass()->run( x ) )
     {
-        libcasm_fe::SymbolicExecutionPass ast_sym;
-        if( not ast_sym.run( x ) )
-        {
-            return -1;
-        }    
+        if( ast_check.isPassArgSelected() )
+		{
+			return 0;
+		}
     }
-    else
-    {
-        libcasm_fe::NumericExecutionPass ast_num;
-        if( not ast_num.run( x ) )
-        {
-            return -1;
-        }    
-    }
+	else
+	{
+		return -1;
+	}
+
+	libpass::PassInfo ast_dump = libpass::PassRegistry::getPassInfo< libcasm_fe::AstDumpPass >();
+	if( ast_dump.isPassArgSelected() )
+	{
+		if( not ast_dump.constructPass()->run( x ) )
+		{
+			return -1;
+		}
+	}
+	
+	libpass::PassInfo ast_exec_sym = libpass::PassRegistry::getPassInfo< libcasm_fe::SymbolicExecutionPass >();
+	if( ast_exec_sym.isPassArgSelected() )
+	{
+		return ast_exec_sym.constructPass()->run( x ) ? 0 : -1;
+	}
+	
+	libpass::PassInfo ast_exec_num = libpass::PassRegistry::getPassInfo< libcasm_fe::NumericExecutionPass >();
+	if( not ast_exec_num.isPassArgSelected() )
+	{
+		if( ast_dump.isPassArgSelected() )
+		{
+			return 0;
+		}
+		options.info( "no command provided, using '--ast-exec-num'" );
+	}
+	return ast_exec_num.constructPass()->run( x ) ? 0 : -1;
     
     //libcasm_ir::AstToCasmIRPass ast2ir; 
     //ast2ir.run( x );
@@ -239,8 +239,6 @@ int main( int argc, const char *argv[] )
     //libcasm_ir::CasmIRDumpPass ir_dump; 
     //printf( "\n===--- DUMPING CASM IR ---===\n" );
     //ir_dump.run( x );
-    
-    return 0;
 }
 
 
