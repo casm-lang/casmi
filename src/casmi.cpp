@@ -26,8 +26,8 @@
 #include "version.h"
 #include "license.h"
 
-#include "stdhl/cpp/Default.h"
-#include "stdhl/cpp/Args.h"
+#include "cpp/Default.h"
+#include "cpp/Args.h"
 
 #include "libpass.h"
 #include "libcasm-fe.all.h"

@@ -41,13 +41,12 @@ CP  = $(shell find src -name '*.cpp' | cut -d'.' -f1)
 CO  = $(CP:%=obj/%.o)
 
 CI  = -I src
-CI += -I src/ir
 CI += -I obj
-CI += -I lib
+CI += -I lib/stdhl
+CI += -I lib/pass
 CI += -I lib/casm-fe
 CI += -I lib/casm-ir
 CI += -I lib/casm-tc
-CI += -I lib/pass
 
 CL  = obj/casmi.a
 CL += lib/pass/libpass.a
