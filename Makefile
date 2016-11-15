@@ -24,6 +24,7 @@
 #   
 
 .PHONY: obj/version.h obj/license.h
+.NOTPARALLEL: obj/version.h obj/license.h
 
 default: debug
 
@@ -112,7 +113,7 @@ all: clean default
 #doxy:
 #	doxygen
 
-config: CFG="CC=$(CC) CF=\"$(CF)\""
+config: CFG="CC=$(CC) CF=\"$(CF)\" '$(MAKE) $(MFLAGS)'"
 config:
 	@echo "CFG  $(CFG)"
 
@@ -130,16 +131,16 @@ obj/%.o: %.c
 
 
 lib/pass/libpass.a: lib/pass
-	@cd $<; $(MAKE) build CC="$(CC)" CF="$(CF)"
+	@cd $<; $(MAKE) $(MFLAGS) build CC="$(CC)" CF="$(CF)"
 
 lib/stdhl/libstdhlcpp.a: lib/stdhl
-	@cd $<; $(MAKE) build CC="$(CC)" CF="$(CF)"
+	@cd $<; $(MAKE) $(MFLAGS) build CC="$(CC)" CF="$(CF)"
 
 lib/casm-fe/libcasm-fe.a: lib/casm-fe
-	@cd $<; $(MAKE) build CC="$(CC)" CF="$(CF)"
+	@cd $<; $(MAKE) $(MFLAGS) build CC="$(CC)" CF="$(CF)"
 
 lib/casm-ir/libcasm-ir.a: lib/casm-ir
-	@cd $<; $(MAKE) build CC="$(CC)" CF="$(CF)"
+	@cd $<; $(MAKE) $(MFLAGS) build CC="$(CC)" CF="$(CF)"
 
 
 obj/version.h:
@@ -163,10 +164,10 @@ $(TARGET): obj/version.h obj/license.h $(CL)
 	@$(CC) $(CF) -o $@ $(CL) -lstdc++ -lm
 
 clean:
-	$(MAKE) clean -C lib/pass
-	$(MAKE) clean -C lib/stdhl
-	$(MAKE) clean -C lib/casm-fe
-	$(MAKE) clean -C lib/casm-ir
+	$(MAKE) $(MFLAGS) clean -C lib/pass
+	$(MAKE) $(MFLAGS) clean -C lib/stdhl
+	$(MAKE) $(MFLAGS) clean -C lib/casm-fe
+	$(MAKE) $(MFLAGS) clean -C lib/casm-ir
 	@echo "RMD " obj
 	@rm -rf obj
 	@echo "RM  " $(TARGET)
@@ -205,7 +206,7 @@ $(TEST_TARGET): $(TO) $(CO) $(CL) $(TARGET)
 	@echo "RUN " $@
 	@./$@
 	@echo "RUN " $@
-	CASM=`pwd`/$(TARGET) $(MAKE) test-run -C lib/casm-tc
+	CASM=`pwd`/$(TARGET) $(MAKE) $(MFLAGS) test-run -C lib/casm-tc
 
 
 info:
