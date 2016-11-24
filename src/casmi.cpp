@@ -43,7 +43,6 @@
 int main( int argc, const char* argv[] )
 {
     const char* file_name = 0;
-    // const char* output_name = 0;
     u1 flag_dump_updates = false;
 
     Args options(
@@ -61,9 +60,7 @@ int main( int argc, const char* argv[] )
 
     options.add( 't', "test-case-profile", Args::NONE,
         "Display the unique test profile identifier and exit.",
-        [&options
-            //, &output_name
-    ]( const char* option ) {
+        [&options]( const char* option ) {
             printf( "%s\n",
                 libcasm_tc::Profile::get( libcasm_tc::Profile::INTERPRETER ) );
             exit( 0 );
@@ -133,8 +130,9 @@ int main( int argc, const char* argv[] )
 
     libpass::PassResult x;
     x.getResults()[ 0 ] = (void*)file_name;
-    // x.getResults()[ (void*)1 ] = (void*)output_name;
-    x.getResults()[ (void*)2 ] = (void*)flag_dump_updates;
+    x.getResults()[ (void*)2 ]
+        = (void*)flag_dump_updates; // TODO: PPA: this will be removed and
+                                    // changed to a pass setter option
 
     libpass::PassInfo ast_parse
         = libpass::PassRegistry::getPassInfo< libcasm_fe::SourceToAstPass >();
