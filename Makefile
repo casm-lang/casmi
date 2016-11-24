@@ -142,6 +142,8 @@ lib/casm-fe/libcasm-fe.a: lib/casm-fe
 lib/casm-ir/libcasm-ir.a: lib/casm-ir
 	@cd $<; $(MAKE) $(MFLAGS) build CC="$(CC)" CF="$(CF)"
 
+.PHONY: $(CI)
+
 
 obj/version.h:
 	@mkdir -p `dirname $@`
