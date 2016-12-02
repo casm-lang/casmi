@@ -59,10 +59,12 @@ CC  =
 CF  =
 
   %-gcc: CC = gcc
-%-clang: CC = clang
+%-clang: CC = clang++
 
-  debug-%: CF += -O0 -g
-release-%: CF += -O3 -DNDEBUG
+   debug-%: CF += -O0 -g
+ release-%: CF += -O3 -DNDEBUG
+sanitize-%: CF += -O1 -g -fno-omit-frame-pointer -fno-optimize-sibling-calls\
+                  -fsanitize=undefined -fsanitize=address
 
 linux%:  CF += -Wall -std=c++11
 linux%:  XF += -Wall -std=c11
@@ -80,29 +82,38 @@ linux32-check: check
 linux64-check: check
 
 
-  debug-build-linux32-gcc:   linux32-build
-  debug-check-linux32-gcc:   linux32-check
-release-build-linux32-gcc:   linux32-build
-release-check-linux32-gcc:   linux32-check
+   debug-build-linux32-gcc:   linux32-build
+   debug-check-linux32-gcc:   linux32-check
+ release-build-linux32-gcc:   linux32-build
+ release-check-linux32-gcc:   linux32-check
+sanitize-build-linux32-gcc:   linux32-build
+sanitize-check-linux32-gcc:   linux32-check
 
-  debug-build-linux64-gcc:   linux64-build
-  debug-check-linux64-gcc:   linux64-check
-release-build-linux64-gcc:   linux64-build
-release-check-linux64-gcc:   linux64-check
+   debug-build-linux64-gcc:   linux64-build
+   debug-check-linux64-gcc:   linux64-check
+ release-build-linux64-gcc:   linux64-build
+ release-check-linux64-gcc:   linux64-check
+sanitize-build-linux64-gcc:   linux64-build
+sanitize-check-linux64-gcc:   linux64-check
 
-  debug-build-linux32-clang: linux32-build
-  debug-check-linux32-clang: linux32-check
-release-build-linux32-clang: linux32-build
-release-check-linux32-clang: linux32-check
+   debug-build-linux32-clang: linux32-build
+   debug-check-linux32-clang: linux32-check
+ release-build-linux32-clang: linux32-build
+ release-check-linux32-clang: linux32-check
+sanitize-build-linux32-clang: linux32-build
+sanitize-check-linux32-clang: linux32-check
 
-  debug-build-linux64-clang: linux64-build
-  debug-check-linux64-clang: linux64-check
-release-build-linux64-clang: linux64-build
-release-check-linux64-clang: linux64-check
+   debug-build-linux64-clang: linux64-build
+   debug-check-linux64-clang: linux64-check
+ release-build-linux64-clang: linux64-build
+ release-check-linux64-clang: linux64-check
+sanitize-build-linux64-clang: linux64-build
+sanitize-check-linux64-clang: linux64-check
 
 
-  debug:   debug-build-linux64-clang
-release: clean release-build-linux64-clang
+   debug: debug-build-linux64-clang
+ release: clean release-build-linux64-clang
+sanitize: clean sanitize-build-linux64-clang
 
 test:           debug-check-linux64-clang
 test-release: release-check-linux64-clang
