@@ -59,7 +59,7 @@ CC  =
 CF  =
 
   %-gcc: CC = gcc
-%-clang: CC = clang++
+%-clang: CC = clang
 
    debug-%: CF += -O0 -g
  release-%: CF += -O3 -DNDEBUG

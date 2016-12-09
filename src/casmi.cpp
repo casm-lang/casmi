@@ -26,13 +26,12 @@
 #include "license.h"
 #include "version.h"
 
-#include "cpp/Args.h"
-#include "cpp/Default.h"
+#include "libpass.h"
+#include "libstdhlcpp.h"
 
 #include "libcasm-fe.all.h"
 #include "libcasm-ir.all.h"
 #include "libcasm-tc.h"
-#include "libpass.h"
 
 /**
     @brief TODO
@@ -44,6 +43,9 @@ int main( int argc, const char* argv[] )
 {
     const char* file_name = 0;
     u1 flag_dump_updates = false;
+
+    libstdhl::Log::DefaultSource = libstdhl::Log::Source(
+        [&argv]( void* args ) -> const char* { return argv[ 0 ]; } );
 
     libstdhl::Args options( argc, argv, libstdhl::Args::DEFAULT,
         [&file_name, &options]( const char* arg ) {
