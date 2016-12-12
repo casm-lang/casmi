@@ -58,12 +58,12 @@ CL += lib/casm-ir/libcasm-ir.a
 CC  =
 CF  =
 
-  %-gcc: CC = gcc
-%-clang: CC = clang
+  %-gcc: CC = g++
+%-clang: CC = clang++
 
    debug-%: CF += -O0 -g
  release-%: CF += -O3 -DNDEBUG
-sanitize-%: CF += -O1 -g -fno-omit-frame-pointer -fno-optimize-sibling-calls\
+sanitize-%: CF += -O1 -g -fno-omit-frame-pointer -fno-optimize-sibling-calls \
                   -fsanitize=undefined -fsanitize=address
 
 linux%:  CF += -Wall -std=c++11
