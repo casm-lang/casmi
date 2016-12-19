@@ -141,7 +141,8 @@ int main( int argc, const char* argv[] )
         = static_cast< libpass::LoadFilePass& >(
             *libpass::PassRegistry::getPassInfo< libpass::LoadFilePass >()
                  .constructPass() );
-    if( not load_file_pass.setFileName( file_name ).run( x ) )
+    load_file_pass.setFileName( file_name );
+    if( not load_file_pass.run( x ) )
     {
         return -1;
     }
