@@ -137,12 +137,11 @@ int main( int argc, const char* argv[] )
         = (void*)flag_dump_updates; // TODO: PPA: this will be removed and
                                     // changed to a pass setter option
 
-    libpass::LoadFilePass& load_file_pass
-        = static_cast< libpass::LoadFilePass& >(
-            *libpass::PassRegistry::getPassInfo< libpass::LoadFilePass >()
-                 .constructPass() );
-    load_file_pass.setFileName( file_name );
-    if( not load_file_pass.run( x ) )
+    auto load_file_pass = std::dynamic_pointer_cast< libpass::LoadFilePass >(
+        libpass::PassRegistry::getPassInfo< libpass::LoadFilePass >()
+            .constructPass() );
+    load_file_pass->setFileName( file_name );
+    if( not load_file_pass->run( x ) )
     {
         return -1;
     }
