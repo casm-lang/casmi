@@ -48,7 +48,9 @@ $(OBJ):
 	@mkdir -p $(OBJ)/uts
 
 clean:
+ifneq ("$(wildcard $(OBJ)/CMakeCache.txt)","")
 	@$(MAKE) $(MFLAGS) --no-print-directory -C $(OBJ) clean
+endif
 
 clean-all:
 	@echo "-- Removing build directory" $(OBJ)
