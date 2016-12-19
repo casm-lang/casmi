@@ -27,6 +27,8 @@ TARGET = casmi
 
 include .config.mk
 
+ENV_FLAGS = CASM=$(OBJ)/$(TARGET)
+
 
 version: $(OBJ)/version.h
 $(OBJ)/version.h: $(OBJ)
