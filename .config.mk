@@ -96,7 +96,7 @@ $(TESTS):%-test: %
 	@$(MAKE) $(MFLAGS) --no-print-directory \
 	-C $(OBJ) $(TARGET)-check
 	@echo "-- Running unit test"
-	@$(ENV_FLAGS) ./$(OBJ)/$(TARGET)-check
+	@$(ENV_FLAGS) ./$(OBJ)/$(TARGET)-check $(ENV_ARGS)
 
 
 benchmark: debug-benchmark
@@ -107,4 +107,4 @@ $(BENCH):%-benchmark: %
 	@$(MAKE) $(MFLAGS) --no-print-directory \
 	-C $(OBJ) $(TARGET)-run
 	@echo "-- Running benchmark"
-	@$(ENV_FLAGS) ./$(OBJ)/$(TARGET)-run
+	@$(ENV_FLAGS) ./$(OBJ)/$(TARGET)-run $(ENV_ARGS)
