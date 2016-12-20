@@ -95,8 +95,8 @@ add_executable( ${TARGET}
 )
 
 target_link_libraries( ${TARGET}
-  casm-ir
   casm-fe
+  casm-ir
   pass
   stdhl
 )

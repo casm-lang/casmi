@@ -27,7 +27,7 @@ TARGET = casmi
 
 include .config.mk
 
-ENV_FLAGS = CASM=$(OBJ)/$(TARGET)
+ENV_FLAGS = CASM=$(OBJ)/$(TARGET) CASM_ARG_PRE=--ast-exec-num
 
 
 version: $(OBJ)/version.h

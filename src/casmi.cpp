@@ -108,7 +108,7 @@ int main( int argc, const char* argv[] )
     {
         // PassId    id = p.first;
         libpass::PassInfo& pi = *p.second;
-
+        
         if( pi.getPassArgChar() == 0 && pi.getPassArgString() == 0 )
         {
             // internal pass, do not register a cmd line flag
@@ -146,11 +146,11 @@ int main( int argc, const char* argv[] )
         return -1;
     }
 
-    libpass::PassInfo ast_parse
+    libpass::PassInfo src_to_ast
         = libpass::PassRegistry::getPassInfo< libcasm_fe::SourceToAstPass >();
-    if( ast_parse.constructPass()->run( x ) )
+    if( src_to_ast.constructPass()->run( x ) )
     {
-        if( ast_parse.isPassArgSelected() )
+        if( src_to_ast.isPassArgSelected() )
         {
             return 0;
         }
@@ -193,22 +193,44 @@ int main( int argc, const char* argv[] )
 
     libpass::PassInfo ast_exec_num = libpass::PassRegistry::
         getPassInfo< libcasm_fe::NumericExecutionPass >();
-    if( not ast_exec_num.isPassArgSelected() )
+
+    libpass::PassInfo ast_to_ir
+        = libpass::PassRegistry::getPassInfo< libcasm_fe::AstToCasmIRPass >();
+    
+    libpass::PassInfo ir_dump
+        = libpass::PassRegistry::getPassInfo< libcasm_ir::CasmIRDumpPass >();
+    
+    
+    if( ast_exec_num.isPassArgSelected() )
     {
-        if( ast_dump.isPassArgSelected() )
+        return ast_exec_num.constructPass()->run( x ) ? 0 : -1;
+    }
+    
+    if( not ast_to_ir.isPassArgSelected() and not ir_dump.isPassArgSelected() )
+    {
+        libstdhl::Log::info( "no command provided, using '--ast-exec-num'" );
+        return ast_exec_num.constructPass()->run( x ) ? 0 : -1;
+    }
+
+    if( ast_to_ir.constructPass()->run( x ) )
+    {
+        if( ast_to_ir.isPassArgSelected() )
         {
             return 0;
         }
-        options.info( "no command provided, using '--ast-exec-num'" );
     }
-    return ast_exec_num.constructPass()->run( x ) ? 0 : -1;
-
-    // libcasm_ir::AstToCasmIRPass ast2ir;
-    // ast2ir.run( x );
-
-    // libcasm_ir::CasmIRDumpPass ir_dump;
-    // printf( "\n===--- DUMPING CASM IR ---===\n" );
-    // ir_dump.run( x );
+    else
+    {
+        return -1;
+    }
+    
+    if( ir_dump.isPassArgSelected() )
+    {
+        return ir_dump.constructPass()->run( x ) ? 0 : -1;
+    }
+    
+    libstdhl::Log::error( "no valid command provided!" );
+    return -1;
 }
 
 //
