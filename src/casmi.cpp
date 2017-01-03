@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2014-2016 CASM Organization
+//  Copyright (c) 2014-2017 CASM Organization
 //  All rights reserved.
 //
 //  Developed by: Florian Hahn
@@ -108,7 +108,7 @@ int main( int argc, const char* argv[] )
     {
         // PassId    id = p.first;
         libpass::PassInfo& pi = *p.second;
-        
+
         if( pi.getPassArgChar() == 0 && pi.getPassArgString() == 0 )
         {
             // internal pass, do not register a cmd line flag
@@ -196,16 +196,15 @@ int main( int argc, const char* argv[] )
 
     libpass::PassInfo ast_to_ir
         = libpass::PassRegistry::getPassInfo< libcasm_fe::AstToCasmIRPass >();
-    
+
     libpass::PassInfo ir_dump
         = libpass::PassRegistry::getPassInfo< libcasm_ir::CasmIRDumpPass >();
-    
-    
+
     if( ast_exec_num.isPassArgSelected() )
     {
         return ast_exec_num.constructPass()->run( x ) ? 0 : -1;
     }
-    
+
     if( not ast_to_ir.isPassArgSelected() and not ir_dump.isPassArgSelected() )
     {
         libstdhl::Log::info( "no command provided, using '--ast-exec-num'" );
@@ -223,12 +222,12 @@ int main( int argc, const char* argv[] )
     {
         return -1;
     }
-    
+
     if( ir_dump.isPassArgSelected() )
     {
         return ir_dump.constructPass()->run( x ) ? 0 : -1;
     }
-    
+
     libstdhl::Log::error( "no valid command provided!" );
     return -1;
 }
