@@ -29,7 +29,7 @@
 #include "libpass.h"
 #include "libstdhlcpp.h"
 
-#include "libcasm-fe.all.h"
+#include "libcasm-fe.h"
 #include "libcasm-ir.h"
 #include "libcasm-tc.h"
 
