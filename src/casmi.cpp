@@ -30,7 +30,7 @@
 #include "libstdhlcpp.h"
 
 #include "libcasm-fe.all.h"
-#include "libcasm-ir.all.h"
+#include "libcasm-ir.h"
 #include "libcasm-tc.h"
 
 /**
