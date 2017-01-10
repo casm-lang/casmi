@@ -54,7 +54,7 @@ int main( int argc, const char* argv[] )
 
             if( cnt > 1 )
             {
-                options.error( 1, "to many file names passed" );
+                options.error( 1, "too many file names passed" );
             }
 
             file_name = arg;
