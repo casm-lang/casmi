@@ -54,7 +54,7 @@ int main( int argc, const char* argv[] )
 
             if( cnt > 1 )
             {
-                options.error( 1, "too many file names passed" );
+                options.m_error( 1, "too many file names passed" );
             }
 
             file_name = arg;
@@ -78,9 +78,9 @@ int main( int argc, const char* argv[] )
                 "usage: %s [options] <file>\n"
                 "\n"
                 "options:\n",
-                options.getProgramName() );
+                options.programName() );
 
-            options.usage();
+            options.m_usage();
 
             exit( 0 );
         } );
@@ -93,7 +93,7 @@ int main( int argc, const char* argv[] )
                 "%s: version: %s [ %s %s ]\n"
                 "\n"
                 "%s\n",
-                options.getProgramName(), VERSION, __DATE__, __TIME__,
+                options.programName(), VERSION, __DATE__, __TIME__,
                 LICENSE );
 
             exit( 0 );
@@ -104,27 +104,27 @@ int main( int argc, const char* argv[] )
         [&flag_dump_updates](
             const char* option ) { flag_dump_updates = true; } );
 
-    for( auto& p : libpass::PassRegistry::getRegisteredPasses() )
+    for( auto& p : libpass::PassRegistry::registeredPasses() )
     {
         // PassId    id = p.first;
         libpass::PassInfo& pi = *p.second;
 
-        if( pi.getPassArgChar() == 0 && pi.getPassArgString() == 0 )
+        if( pi.argChar() == 0 && pi.argString() == 0 )
         {
             // internal pass, do not register a cmd line flag
             continue;
         }
 
-        options.add( pi.getPassArgChar(), pi.getPassArgString(),
-            libstdhl::Args::NONE, pi.getPassDescription(),
-            pi.getPassArgAction() );
+        options.add( pi.argChar(), pi.argString(),
+            libstdhl::Args::NONE, pi.description(),
+            pi.argAction() );
     }
 
     options.parse();
 
     if( !file_name )
     {
-        options.error( 1, "no input file provided" );
+        options.m_error( 1, "no input file provided" );
     }
 
     // TODO: FIXME: the following code should be implemented in the PassManager
@@ -133,12 +133,12 @@ int main( int argc, const char* argv[] )
 
     libpass::PassResult x;
 
-    x.getResults()[ (void*)2 ]
+    x.results()[ (void*)2 ]
         = (void*)flag_dump_updates; // TODO: PPA: this will be removed and
                                     // changed to a pass setter option
 
     auto load_file_pass = std::dynamic_pointer_cast< libpass::LoadFilePass >(
-        libpass::PassRegistry::getPassInfo< libpass::LoadFilePass >()
+        libpass::PassRegistry::passInfo< libpass::LoadFilePass >()
             .constructPass() );
     load_file_pass->setFileName( file_name );
     if( not load_file_pass->run( x ) )
@@ -147,10 +147,10 @@ int main( int argc, const char* argv[] )
     }
 
     libpass::PassInfo src_to_ast
-        = libpass::PassRegistry::getPassInfo< libcasm_fe::SourceToAstPass >();
+        = libpass::PassRegistry::passInfo< libcasm_fe::SourceToAstPass >();
     if( src_to_ast.constructPass()->run( x ) )
     {
-        if( src_to_ast.isPassArgSelected() )
+        if( src_to_ast.isArgSelected() )
         {
             return 0;
         }
@@ -161,10 +161,10 @@ int main( int argc, const char* argv[] )
     }
 
     libpass::PassInfo ast_check
-        = libpass::PassRegistry::getPassInfo< libcasm_fe::TypeCheckPass >();
+        = libpass::PassRegistry::passInfo< libcasm_fe::TypeCheckPass >();
     if( ast_check.constructPass()->run( x ) )
     {
-        if( ast_check.isPassArgSelected() )
+        if( ast_check.isArgSelected() )
         {
             return 0;
         }
@@ -175,8 +175,8 @@ int main( int argc, const char* argv[] )
     }
 
     libpass::PassInfo ast_dump
-        = libpass::PassRegistry::getPassInfo< libcasm_fe::AstDumpPass >();
-    if( ast_dump.isPassArgSelected() )
+        = libpass::PassRegistry::passInfo< libcasm_fe::AstDumpPass >();
+    if( ast_dump.isArgSelected() )
     {
         if( not ast_dump.constructPass()->run( x ) )
         {
@@ -185,27 +185,27 @@ int main( int argc, const char* argv[] )
     }
 
     libpass::PassInfo ast_exec_sym = libpass::PassRegistry::
-        getPassInfo< libcasm_fe::SymbolicExecutionPass >();
-    if( ast_exec_sym.isPassArgSelected() )
+        passInfo< libcasm_fe::SymbolicExecutionPass >();
+    if( ast_exec_sym.isArgSelected() )
     {
         return ast_exec_sym.constructPass()->run( x ) ? 0 : -1;
     }
 
     libpass::PassInfo ast_exec_num = libpass::PassRegistry::
-        getPassInfo< libcasm_fe::NumericExecutionPass >();
+        passInfo< libcasm_fe::NumericExecutionPass >();
 
     libpass::PassInfo ast_to_ir
-        = libpass::PassRegistry::getPassInfo< libcasm_fe::AstToCasmIRPass >();
+        = libpass::PassRegistry::passInfo< libcasm_fe::AstToCasmIRPass >();
 
     libpass::PassInfo ir_dump
-        = libpass::PassRegistry::getPassInfo< libcasm_ir::CasmIRDumpPass >();
+        = libpass::PassRegistry::passInfo< libcasm_ir::CasmIRDumpPass >();
 
-    if( ast_exec_num.isPassArgSelected() )
+    if( ast_exec_num.isArgSelected() )
     {
         return ast_exec_num.constructPass()->run( x ) ? 0 : -1;
     }
 
-    if( not ast_to_ir.isPassArgSelected() and not ir_dump.isPassArgSelected() )
+    if( not ast_to_ir.isArgSelected() and not ir_dump.isArgSelected() )
     {
         libstdhl::Log::info( "no command provided, using '--ast-exec-num'" );
         return ast_exec_num.constructPass()->run( x ) ? 0 : -1;
@@ -213,7 +213,7 @@ int main( int argc, const char* argv[] )
 
     if( ast_to_ir.constructPass()->run( x ) )
     {
-        if( ast_to_ir.isPassArgSelected() )
+        if( ast_to_ir.isArgSelected() )
         {
             return 0;
         }
@@ -223,7 +223,7 @@ int main( int argc, const char* argv[] )
         return -1;
     }
 
-    if( ir_dump.isPassArgSelected() )
+    if( ir_dump.isArgSelected() )
     {
         return ir_dump.constructPass()->run( x ) ? 0 : -1;
     }
