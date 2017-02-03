@@ -93,8 +93,7 @@ int main( int argc, const char* argv[] )
                 "%s: version: %s [ %s %s ]\n"
                 "\n"
                 "%s\n",
-                options.programName(), VERSION, __DATE__, __TIME__,
-                LICENSE );
+                options.programName(), VERSION, __DATE__, __TIME__, LICENSE );
 
             exit( 0 );
         } );
@@ -115,9 +114,8 @@ int main( int argc, const char* argv[] )
             continue;
         }
 
-        options.add( pi.argChar(), pi.argString(),
-            libstdhl::Args::NONE, pi.description(),
-            pi.argAction() );
+        options.add( pi.argChar(), pi.argString(), libstdhl::Args::NONE,
+            pi.description(), pi.argAction() );
     }
 
     options.parse();
@@ -137,7 +135,7 @@ int main( int argc, const char* argv[] )
         = (void*)flag_dump_updates; // TODO: PPA: this will be removed and
                                     // changed to a pass setter option
 
-    auto load_file_pass = std::dynamic_pointer_cast< libpass::LoadFilePass >(
+    auto load_file_pass = std::static_pointer_cast< libpass::LoadFilePass >(
         libpass::PassRegistry::passInfo< libpass::LoadFilePass >()
             .constructPass() );
     load_file_pass->setFileName( file_name );
@@ -191,8 +189,8 @@ int main( int argc, const char* argv[] )
         return ast_exec_sym.constructPass()->run( x ) ? 0 : -1;
     }
 
-    libpass::PassInfo ast_exec_num = libpass::PassRegistry::
-        passInfo< libcasm_fe::NumericExecutionPass >();
+    libpass::PassInfo ast_exec_num
+        = libpass::PassRegistry::passInfo< libcasm_fe::NumericExecutionPass >();
 
     libpass::PassInfo ast_to_ir
         = libpass::PassRegistry::passInfo< libcasm_fe::AstToCasmIRPass >();
