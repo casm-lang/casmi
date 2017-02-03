@@ -27,7 +27,7 @@
 #include "version.h"
 
 #include "libpass.h"
-#include "libstdhlcpp.h"
+#include "libstdhl.h"
 
 #include "libcasm-fe.h"
 #include "libcasm-ir.h"
