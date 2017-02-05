@@ -75,16 +75,17 @@ set( CMAKE_CXX_FLAGS_SANITIZE "${CMAKE_CXX_FLAGS_SANITIZE} -O1 -Wextra -g -fno-o
 
 set( VERSION ${CMAKE_CURRENT_SOURCE_DIR}/obj/version.h )
 add_custom_command(
-  OUTPUT  ${VERSION}
+  OUTPUT  ${VERSION} ALL
   COMMAND make -C ${CMAKE_CURRENT_SOURCE_DIR} version
-  COMMENT "Generating license ${VERSION}"
+  COMMENT ""
 )
 
 set( LICENSE ${CMAKE_CURRENT_SOURCE_DIR}/obj/license.h )
 add_custom_command(
   OUTPUT  ${LICENSE}
   COMMAND make -C ${CMAKE_CURRENT_SOURCE_DIR} license
-  COMMENT "Generating license ${LICENSE}"
+  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt
+  COMMENT ""
 )
 
 
