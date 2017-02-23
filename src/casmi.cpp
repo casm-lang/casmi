@@ -131,14 +131,10 @@ int main( int argc, const char* argv[] )
 
     libpass::PassResult x;
 
-    x.results()[ (void*)2 ]
-        = (void*)flag_dump_updates; // TODO: PPA: this will be removed and
-                                    // changed to a pass setter option
-
     auto load_file_pass = std::static_pointer_cast< libpass::LoadFilePass >(
         libpass::PassRegistry::passInfo< libpass::LoadFilePass >()
             .constructPass() );
-    load_file_pass->setFileName( file_name );
+    load_file_pass->setFilename( file_name );
     if( not load_file_pass->run( x ) )
     {
         return -1;
@@ -200,7 +196,13 @@ int main( int argc, const char* argv[] )
 
     if( ast_exec_num.isArgSelected() )
     {
-        return ast_exec_num.constructPass()->run( x ) ? 0 : -1;
+        auto ast_exec_num_pass
+            = std::static_pointer_cast< libcasm_fe::NumericExecutionPass >(
+                ast_exec_num.constructPass() );
+
+        ast_exec_num_pass->setDumpUpdates( flag_dump_updates );
+
+        return ast_exec_num_pass->run( x ) ? 0 : -1;
     }
 
     if( not ast_to_ir.isArgSelected() and not ir_dump.isArgSelected() )
