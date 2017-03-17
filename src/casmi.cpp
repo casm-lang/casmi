@@ -154,7 +154,7 @@ int main( int argc, const char* argv[] )
         return -1;
     }
 
-    libpass::PassInfo ast_check
+    /*libpass::PassInfo ast_check
         = libpass::PassRegistry::passInfo< libcasm_fe::TypeCheckPass >();
     if( ast_check.constructPass()->run( x ) )
     {
@@ -166,19 +166,20 @@ int main( int argc, const char* argv[] )
     else
     {
         return -1;
-    }
+    }*/
 
     libpass::PassInfo ast_dump
-        = libpass::PassRegistry::passInfo< libcasm_fe::AstDumpPass >();
+        = libpass::PassRegistry::passInfo< libcasm_fe::AstDumpDotPass >();
     if( ast_dump.isArgSelected() )
     {
         if( not ast_dump.constructPass()->run( x ) )
         {
             return -1;
         }
+        return 0; // TODO remove me
     }
 
-    libpass::PassInfo ast_exec_sym = libpass::PassRegistry::
+    /*libpass::PassInfo ast_exec_sym = libpass::PassRegistry::
         passInfo< libcasm_fe::SymbolicExecutionPass >();
     if( ast_exec_sym.isArgSelected() )
     {
@@ -226,7 +227,7 @@ int main( int argc, const char* argv[] )
     if( ir_dump.isArgSelected() )
     {
         return ir_dump.constructPass()->run( x ) ? 0 : -1;
-    }
+    }*/
 
     libstdhl::Log::error( "no valid command provided!" );
     return -1;
