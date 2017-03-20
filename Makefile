@@ -2,9 +2,9 @@
 #   Copyright (c) 2014-2017 CASM Organization
 #   All rights reserved.
 #
-#   Developed by: Florian Hahn
-#                 Philipp Paulweber
+#   Developed by: Philipp Paulweber
 #                 Emmanuel Pescosta
+#                 Florian Hahn
 #                 https://github.com/casm-lang/casmi
 #
 #   This file is part of casmi.
@@ -41,6 +41,8 @@ $(OBJ)/license.h: $(OBJ) LICENSE.txt
 	@echo "const char LICENSE[] =" > $@
 	@head -n `grep -ne "------" LICENSE.txt | grep -Eo "[0-9]*"` LICENSE.txt | \
 		sed "/-----/d" | \
+		sed "/This file is part of/d" | \
+		sed "s/^/    /" | \
 		sed "s/^/\"/g" | \
 		sed "s/$$/\\\n\"/g" >> $@
 	@echo ";" >> $@

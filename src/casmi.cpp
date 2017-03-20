@@ -2,9 +2,9 @@
 //  Copyright (c) 2014-2017 CASM Organization
 //  All rights reserved.
 //
-//  Developed by: Florian Hahn
-//                Philipp Paulweber
+//  Developed by: Philipp Paulweber
 //                Emmanuel Pescosta
+//                Florian Hahn
 //                https://github.com/casm-lang/casmi
 //
 //  This file is part of casmi.
@@ -31,6 +31,7 @@
 
 #include "libcasm-fe.h"
 #include "libcasm-ir.h"
+#include "libcasm-rt.h"
 #include "libcasm-tc.h"
 
 /**
@@ -39,13 +40,17 @@
     TODO
 */
 
+#define DESCRIPTION "Corinthian Abstract State Machine (CASM) Interpreter\n"
+
 int main( int argc, const char* argv[] )
 {
     const char* file_name = 0;
     u1 flag_dump_updates = false;
 
-    libstdhl::Log::DefaultSource = libstdhl::Log::Source(
-        [&argv]( void* args ) -> const char* { return argv[ 0 ]; } );
+    const auto source
+        = libstdhl::make< libstdhl::Log::Source >( argv[ 0 ], DESCRIPTION );
+
+    libstdhl::Log::defaultSource( source );
 
     libstdhl::Args options( argc, argv, libstdhl::Args::DEFAULT,
         [&file_name, &options]( const char* arg ) {
@@ -67,8 +72,6 @@ int main( int argc, const char* argv[] )
                 libcasm_tc::Profile::get( libcasm_tc::Profile::INTERPRETER ) );
             exit( 0 );
         } );
-
-#define DESCRIPTION "Corinthian Abstract State Machine (CASM) Interpreter\n"
 
     options.add( 'h', "help", libstdhl::Args::NONE,
         "Display the program usage and synopsis and exit.",
@@ -140,8 +143,39 @@ int main( int argc, const char* argv[] )
         return -1;
     }
 
-    libpass::PassInfo src_to_ast
+    auto src_to_ast
         = libpass::PassRegistry::passInfo< libcasm_fe::SourceToAstPass >();
+
+    auto ast_check
+        = libpass::PassRegistry::passInfo< libcasm_fe::TypeCheckPass >();
+
+    auto ast_dump
+        = libpass::PassRegistry::passInfo< libcasm_fe::AstDumpPass >();
+
+    auto ast_exec_sym = libpass::PassRegistry::
+        passInfo< libcasm_fe::SymbolicExecutionPass >();
+
+    auto ast_exec_num
+        = libpass::PassRegistry::passInfo< libcasm_fe::NumericExecutionPass >();
+
+    auto ast_to_ir
+        = libpass::PassRegistry::passInfo< libcasm_fe::AstToCasmIRPass >();
+
+    auto ir_check
+        = libpass::PassRegistry::passInfo< libcasm_ir::ConsistencyCheckPass >();
+
+    auto ir_dbg
+        = libpass::PassRegistry::passInfo< libcasm_ir::IRDumpDebugPass >();
+
+    auto ir_src
+        = libpass::PassRegistry::passInfo< libcasm_ir::IRDumpSourcePass >();
+
+    auto ir_dot
+        = libpass::PassRegistry::passInfo< libcasm_ir::IRDumpDotPass >();
+
+    // auto ir_cf
+    //     = libpass::PassRegistry::passInfo< libcasm_ir::ConstantFoldingPass >();
+
     if( src_to_ast.constructPass()->run( x ) )
     {
         if( src_to_ast.isArgSelected() )
@@ -154,8 +188,6 @@ int main( int argc, const char* argv[] )
         return -1;
     }
 
-    libpass::PassInfo ast_check
-        = libpass::PassRegistry::passInfo< libcasm_fe::TypeCheckPass >();
     if( ast_check.constructPass()->run( x ) )
     {
         if( ast_check.isArgSelected() )
@@ -168,8 +200,6 @@ int main( int argc, const char* argv[] )
         return -1;
     }
 
-    libpass::PassInfo ast_dump
-        = libpass::PassRegistry::passInfo< libcasm_fe::AstDumpPass >();
     if( ast_dump.isArgSelected() )
     {
         if( not ast_dump.constructPass()->run( x ) )
@@ -178,37 +208,30 @@ int main( int argc, const char* argv[] )
         }
     }
 
-    libpass::PassInfo ast_exec_sym = libpass::PassRegistry::
-        passInfo< libcasm_fe::SymbolicExecutionPass >();
     if( ast_exec_sym.isArgSelected() )
     {
         return ast_exec_sym.constructPass()->run( x ) ? 0 : -1;
     }
 
-    libpass::PassInfo ast_exec_num
-        = libpass::PassRegistry::passInfo< libcasm_fe::NumericExecutionPass >();
-
-    libpass::PassInfo ast_to_ir
-        = libpass::PassRegistry::passInfo< libcasm_fe::AstToCasmIRPass >();
-
-    libpass::PassInfo ir_dump
-        = libpass::PassRegistry::passInfo< libcasm_ir::CasmIRDumpPass >();
+    auto ast_exec_num_pass
+        = std::static_pointer_cast< libcasm_fe::NumericExecutionPass >(
+            ast_exec_num.constructPass() );
+    ast_exec_num_pass->setDumpUpdates( flag_dump_updates );
 
     if( ast_exec_num.isArgSelected() )
     {
-        auto ast_exec_num_pass
-            = std::static_pointer_cast< libcasm_fe::NumericExecutionPass >(
-                ast_exec_num.constructPass() );
-
-        ast_exec_num_pass->setDumpUpdates( flag_dump_updates );
-
         return ast_exec_num_pass->run( x ) ? 0 : -1;
     }
 
-    if( not ast_to_ir.isArgSelected() and not ir_dump.isArgSelected() )
+    if( not ast_to_ir.isArgSelected() and not ir_check.isArgSelected()
+        and not ir_dbg.isArgSelected()
+        and not ir_src.isArgSelected()
+        and not ir_dot.isArgSelected()
+        // and not ir_cf.isArgSelected()
+        )
     {
         libstdhl::Log::info( "no command provided, using '--ast-exec-num'" );
-        return ast_exec_num.constructPass()->run( x ) ? 0 : -1;
+        return ast_exec_num_pass->run( x ) ? 0 : -1;
     }
 
     if( ast_to_ir.constructPass()->run( x ) )
@@ -223,9 +246,39 @@ int main( int argc, const char* argv[] )
         return -1;
     }
 
-    if( ir_dump.isArgSelected() )
+    if( ir_check.constructPass()->run( x ) )
     {
-        return ir_dump.constructPass()->run( x ) ? 0 : -1;
+        if( ir_check.isArgSelected() )
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        return -1;
+    }
+
+    // if( ir_cf.isArgSelected() )
+    // {
+    //     if( not ir_cf.constructPass()->run( x ) )
+    //     {
+    //         return -1;
+    //     }
+    // }
+
+    if( ir_dbg.isArgSelected() )
+    {
+        return ir_dbg.constructPass()->run( x ) ? 0 : -1;
+    }
+
+    if( ir_src.isArgSelected() )
+    {
+        return ir_src.constructPass()->run( x ) ? 0 : -1;
+    }
+
+    if( ir_dot.isArgSelected() )
+    {
+        return ir_dot.constructPass()->run( x ) ? 0 : -1;
     }
 
     libstdhl::Log::error( "no valid command provided!" );
