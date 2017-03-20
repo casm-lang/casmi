@@ -31,7 +31,7 @@
 
 #include "libcasm-fe.h"
 #include "libcasm-ir.h"
-#include "libcasm-rt.h"
+//#include "libcasm-rt.h"
 #include "libcasm-tc.h"
 
 /**
@@ -146,20 +146,20 @@ int main( int argc, const char* argv[] )
     auto src_to_ast
         = libpass::PassRegistry::passInfo< libcasm_fe::SourceToAstPass >();
 
-    auto ast_check
-        = libpass::PassRegistry::passInfo< libcasm_fe::TypeCheckPass >();
+    /*auto ast_check
+        = libpass::PassRegistry::passInfo< libcasm_fe::TypeCheckPass >();*/
 
     auto ast_dump
-        = libpass::PassRegistry::passInfo< libcasm_fe::AstDumpPass >();
+        = libpass::PassRegistry::passInfo< libcasm_fe::AstDumpDotPass >();
 
-    auto ast_exec_sym = libpass::PassRegistry::
+    /*auto ast_exec_sym = libpass::PassRegistry::
         passInfo< libcasm_fe::SymbolicExecutionPass >();
 
     auto ast_exec_num
         = libpass::PassRegistry::passInfo< libcasm_fe::NumericExecutionPass >();
 
     auto ast_to_ir
-        = libpass::PassRegistry::passInfo< libcasm_fe::AstToCasmIRPass >();
+        = libpass::PassRegistry::passInfo< libcasm_fe::AstToCasmIRPass >();*/
 
     auto ir_check
         = libpass::PassRegistry::passInfo< libcasm_ir::ConsistencyCheckPass >();
@@ -188,7 +188,7 @@ int main( int argc, const char* argv[] )
         return -1;
     }
 
-    if( ast_check.constructPass()->run( x ) )
+    /*if( ast_check.constructPass()->run( x ) )
     {
         if( ast_check.isArgSelected() )
         {
@@ -209,7 +209,7 @@ int main( int argc, const char* argv[] )
         return 0; // TODO remove me
     }
 
-    if( ast_exec_sym.isArgSelected() )
+    /*if( ast_exec_sym.isArgSelected() )
     {
         return ast_exec_sym.constructPass()->run( x ) ? 0 : -1;
     }
@@ -245,7 +245,7 @@ int main( int argc, const char* argv[] )
     else
     {
         return -1;
-    }
+    }*/
 
     if( ir_check.constructPass()->run( x ) )
     {
