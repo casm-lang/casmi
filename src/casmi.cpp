@@ -146,6 +146,9 @@ int main( int argc, const char* argv[] )
     auto src_to_ast
         = libpass::PassRegistry::passInfo< libcasm_fe::SourceToAstPass >();
 
+    auto ast_attribution
+        = libpass::PassRegistry::passInfo< libcasm_fe::AttributionPass >();
+
     /*auto ast_check
         = libpass::PassRegistry::passInfo< libcasm_fe::TypeCheckPass >();*/
 
@@ -179,6 +182,18 @@ int main( int argc, const char* argv[] )
     if( src_to_ast.constructPass()->run( x ) )
     {
         if( src_to_ast.isArgSelected() )
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        return -1;
+    }
+
+    if( ast_attribution.constructPass()->run( x ) )
+    {
+        if( ast_attribution.isArgSelected() )
         {
             return 0;
         }
