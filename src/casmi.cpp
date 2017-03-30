@@ -162,7 +162,7 @@ int main( int argc, const char* argv[] )
     pm.add< libcasm_fe::SourceToAstPass >();
     pm.add< libcasm_fe::TypeCheckPass >();
     pm.add< libcasm_fe::AstDumpDotPass >();
-    // pm.add< libcasm_fe::AstDumpSourcePass >();
+    pm.add< libcasm_fe::AstDumpSourcePass >();
     // pm.add< libcasm_fe::NumericExecutionPass >(
     //     [&flag_dump_updates]( libcasm_fe::NumericExecutionPass& pass ) {
     //         pass.setDumpUpdates( flag_dump_updates );
