@@ -129,17 +129,25 @@ int main( int argc, const char* argv[] )
             pi.description(), pi.argAction() );
     }
 
-    if( options.parse( log ) )
+    if( auto ret = options.parse( log ) )
     {
         flush();
-        return 2;
+
+        if( ret >= 0 )
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     if( !file_name )
     {
         log.error( "no input file provided" );
         flush();
-        return 1;
+        return 2;
     }
 
     // register all wanted passes
