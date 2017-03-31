@@ -169,7 +169,7 @@ int main( int argc, const char* argv[] )
 
     //     } );
     // pm.add< libcasm_fe::SymbolicExecutionPass >();
-    // pm.add< libcasm_fe::AstToCasmIRPass >();
+    pm.add< libcasm_fe::AstToCasmIRPass >();
 
     pm.add< libcasm_ir::ConsistencyCheckPass >();
     pm.add< libcasm_ir::IRDumpDebugPass >();
