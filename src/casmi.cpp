@@ -49,8 +49,8 @@ int main( int argc, const char* argv[] )
     log.setSource(
         libstdhl::make< libstdhl::Log::Source >( argv[ 0 ], DESCRIPTION ) );
 
-    auto flush = [&pm]() {
-        libstdhl::Log::StringFormatter f;
+    auto flush = [&pm, &argv]() {
+        libstdhl::Log::ApplicationFormatter f( argv[ 0 ] );
         libstdhl::Log::OutputStreamSink c( std::cerr, f );
         pm.stream().flush( c );
     };
@@ -162,7 +162,7 @@ int main( int argc, const char* argv[] )
     pm.add< libcasm_fe::SourceToAstPass >();
     pm.add< libcasm_fe::AttributionPass >();
     pm.add< libcasm_fe::SymbolResolverPass >();
-    pm.add< libcasm_fe::TypeCheckPass >();
+    pm.add< libcasm_fe::TypeInferencePass >();
     pm.add< libcasm_fe::AstDumpDotPass >();
     // pm.add< libcasm_fe::AstDumpSourcePass >();
     // pm.add< libcasm_fe::NumericExecutionPass >(
