@@ -40,7 +40,8 @@
     TODO
 */
 
-#define DESCRIPTION "Corinthian Abstract State Machine (CASM) Interpreter\n"
+static const std::string DESCRIPTION
+    = "Corinthian Abstract State Machine (CASM) Interpreter\n";
 
 int main( int argc, const char* argv[] )
 {
@@ -55,61 +56,70 @@ int main( int argc, const char* argv[] )
         pm.stream().flush( c );
     };
 
-    const char* file_name = 0;
+    std::vector< std::string > files;
     u1 flag_dump_updates = false;
 
-    libstdhl::Args options( argc, argv, libstdhl::Args::DEFAULT,
-        [&file_name, &log]( const char* arg ) {
-            static int cnt = 0;
-            cnt++;
+    libstdhl::Args options(
+        argc, argv, libstdhl::Args::DEFAULT, [&log, &files]( const char* arg ) {
 
-            if( cnt > 1 )
+            if( files.size() > 0 )
             {
-                log.error( "too many file names passed" );
+                log.error( "too many files, input file '" + files.front()
+                           + "' cannot be combined with file '"
+                           + arg
+                           + "'" );
                 return 1;
             }
 
-            file_name = arg;
+            files.emplace_back( arg );
             return 0;
         } );
 
     options.add( 't', "test-case-profile", libstdhl::Args::NONE,
-        "Display the unique test profile identifier and exit.",
+        "display the unique test profile identifier",
         [&options]( const char* option ) {
-            printf( "%s\n",
-                libcasm_tc::Profile::get( libcasm_tc::Profile::INTERPRETER ) );
+
+            std::cout << libcasm_tc::Profile::get(
+                             libcasm_tc::Profile::INTERPRETER )
+                      << "\n";
+
             return -1;
         } );
 
     options.add( 'h', "help", libstdhl::Args::NONE,
-        "Display the program usage and synopsis and exit.",
-        [&options]( const char* option ) {
-            fprintf( stderr, DESCRIPTION
-                "\n"
-                "usage: %s [options] <file>\n"
-                "\n"
-                "options:\n",
-                options.programName() );
+        "display usage and synopsis", [&log, &options]( const char* option ) {
 
-            options.m_usage();
+            log.output( "\n" + DESCRIPTION + "\n" + log.source()->name()
+                        + ": usage: [options] <file>\n"
+                        + "\n"
+                        + "options: \n"
+                        + options.usage()
+                        + "\n" );
+
             return -1;
         } );
 
     options.add( 'v', "version", libstdhl::Args::NONE,
-        "Display interpreter version information",
-        [&options]( const char* option ) {
-            fprintf( stderr, DESCRIPTION
-                "\n"
-                "%s: version: %s [ %s %s ]\n"
-                "\n"
-                "%s",
-                options.programName(), VERSION, __DATE__, __TIME__, LICENSE );
+        "display version information", [&log]( const char* option ) {
+
+            log.output( "\n" + DESCRIPTION + "\n" + log.source()->name()
+                        + ": version: "
+                        + VERSION
+                        + " [ "
+                        + __DATE__
+                        + " "
+                        + __TIME__
+                        + " ]\n"
+                        + "\n"
+                        + LICENSE );
+
             return -1;
         } );
 
     options.add( 'd', "dump-updates", libstdhl::Args::NONE,
         "TBD DESCRIPTION dump updates (updateset)",
         [&flag_dump_updates]( const char* option ) {
+
             flag_dump_updates = true;
             return 0;
         } );
@@ -143,7 +153,7 @@ int main( int argc, const char* argv[] )
         }
     }
 
-    if( !file_name )
+    if( files.size() == 0 )
     {
         log.error( "no input file provided" );
         flush();
@@ -153,15 +163,15 @@ int main( int argc, const char* argv[] )
     // register all wanted passes
     // and configure their setup hooks if desired
 
-    pm.add< libpass::LoadFilePass >(
-        [&file_name]( libpass::LoadFilePass& pass ) {
-            pass.setFilename( file_name );
+    pm.add< libpass::LoadFilePass >( [&files]( libpass::LoadFilePass& pass ) {
+        pass.setFilename( files.front() );
 
-        } );
+    } );
 
     pm.add< libcasm_fe::SourceToAstPass >();
     pm.add< libcasm_fe::AttributionPass >();
-    // pm.add< libcasm_fe::TypeCheckPass >();
+    pm.add< libcasm_fe::SymbolResolverPass >();
+    pm.add< libcasm_fe::TypeInferencePass >();
     pm.add< libcasm_fe::AstDumpDotPass >();
     // pm.add< libcasm_fe::AstDumpSourcePass >();
     pm.add< libcasm_fe::NumericExecutionPass >(
