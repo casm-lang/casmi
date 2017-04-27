@@ -126,17 +126,13 @@ int main( int argc, const char* argv[] )
 
     for( auto& p : libpass::PassRegistry::registeredPasses() )
     {
-        // PassId    id = p.first;
         libpass::PassInfo& pi = *p.second;
 
-        if( pi.argChar() == 0 && pi.argString() == 0 )
+        if( pi.argChar() or pi.argString() )
         {
-            // internal pass, do not register a cmd line flag
-            continue;
+            options.add( pi.argChar(), pi.argString(), libstdhl::Args::NONE,
+                pi.description(), pi.argAction() );
         }
-
-        options.add( pi.argChar(), pi.argString(), libstdhl::Args::NONE,
-            pi.description(), pi.argAction() );
     }
 
     if( auto ret = options.parse( log ) )
@@ -176,7 +172,7 @@ int main( int argc, const char* argv[] )
     // pm.add< libcasm_fe::AstDumpSourcePass >();
     pm.add< libcasm_fe::NumericExecutionPass >(
         [&flag_dump_updates]( libcasm_fe::NumericExecutionPass& pass ) {
-            //pass.setDumpUpdates( flag_dump_updates );
+            // pass.setDumpUpdates( flag_dump_updates );
         } );
     // pm.add< libcasm_fe::SymbolicExecutionPass >();
     // pm.add< libcasm_fe::AstToCasmIRPass >();
