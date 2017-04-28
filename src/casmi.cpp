@@ -184,7 +184,7 @@ int main( int argc, const char* argv[] )
     // pm.add< libcasm_ir::BranchEliminationPass >();
     // pm->add< libcasm_ir::ConstantFoldingPass >();
 
-    // pm.setDefaultPass< libcasm_fe::NumericExecutionPass >();
+    pm.setDefaultPass< libcasm_fe::NumericExecutionPass >();
 
     int result = 0;
 

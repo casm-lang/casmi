@@ -35,6 +35,7 @@ foreach( DEPENDENCY
     stdhl
     pass
     casm-ir
+    casm-rt
     casm-fe
     casm-tc
     )
@@ -61,6 +62,7 @@ include_directories(
   ${LIBS}/stdhl
   ${LIBS}/pass
   ${LIBS}/casm-ir
+  ${LIBS}/casm-rt
   ${LIBS}/casm-fe
   ${LIBS}/casm-tc
 )
@@ -97,6 +99,7 @@ add_executable( ${TARGET}
 
 target_link_libraries( ${TARGET}
   casm-fe
+  casm-rt
   casm-ir
   pass
   stdhl
@@ -114,13 +117,15 @@ add_executable( ${TARGET}-check
   $<TARGET_OBJECTS:pass-test>
   $<TARGET_OBJECTS:stdhl-test>
   $<TARGET_OBJECTS:casm-ir-test>
+  $<TARGET_OBJECTS:casm-rt-test>
   $<TARGET_OBJECTS:casm-fe-test>
   $<TARGET_OBJECTS:casm-tc-test>
 )
 
 target_link_libraries( ${TARGET}-check
-  casm-ir
   casm-fe
+  casm-rt
+  casm-ir
   pass
   stdhl
   pthread
@@ -136,6 +141,7 @@ add_executable( ${TARGET}-run
 #  $<TARGET_OBJECTS:pass-benchmark>
 #  $<TARGET_OBJECTS:stdhl-benchmark>
 #  $<TARGET_OBJECTS:casm-ir-benchmark>
+#  $<TARGET_OBJECTS:casm-rt-benchmark>
 #  $<TARGET_OBJECTS:casm-fe-benchmark>
   $<TARGET_OBJECTS:casm-tc-benchmark>
 )
