@@ -194,10 +194,8 @@ int main( int argc, const char* argv[] )
     }
     catch( std::exception& e )
     {
-        log.error( "pass manager triggered an exception: '"
-                   + std::string( e.what() )
-                   + "'" );
-        result = -1;
+        flush();
+        throw e;
     }
 
     flush();
