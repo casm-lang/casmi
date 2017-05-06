@@ -50,7 +50,11 @@ file( GLOB_RECURSE CXX_UTS_FILES "uts/*.cpp" )
 
 
 set( TARGET casmi )
-project( ${TARGET} )
+project( ${TARGET} LANGUAGES CXX )
+
+
+set( THREADS_PREFER_PTHREAD_FLAG ON )
+find_package( Threads REQUIRED )
 
 
 include_directories(
@@ -103,6 +107,7 @@ target_link_libraries( ${TARGET}
   casm-ir
   pass
   stdhl
+  Threads::Threads
 )
 
 
@@ -128,7 +133,7 @@ target_link_libraries( ${TARGET}-check
   casm-ir
   pass
   stdhl
-  pthread
+  Threads::Threads
 )
 
 
@@ -147,7 +152,7 @@ add_executable( ${TARGET}-run
 )
 
 target_link_libraries( ${TARGET}-run
-  pthread
+  Threads::Threads
 )
 
 
