@@ -113,12 +113,12 @@ add_library( ${TARGET}-test OBJECT
 add_executable( ${TARGET}-check
   ${LIBS}/gtest/googletest/src/gtest_main.cc
   ${LIBS}/gtest/googletest/src/gtest-all.cc  
-  $<TARGET_OBJECTS:${TARGET}-test>
-  $<TARGET_OBJECTS:pass-test>
-  $<TARGET_OBJECTS:stdhl-test>
-  $<TARGET_OBJECTS:casm-ir-test>
-  $<TARGET_OBJECTS:casm-rt-test>
-  $<TARGET_OBJECTS:casm-fe-test>
+  # $<TARGET_OBJECTS:${TARGET}-test>
+  # $<TARGET_OBJECTS:pass-test>
+  # $<TARGET_OBJECTS:stdhl-test>
+  # $<TARGET_OBJECTS:casm-ir-test>
+  # $<TARGET_OBJECTS:casm-rt-test>
+  # $<TARGET_OBJECTS:casm-fe-test>
   $<TARGET_OBJECTS:casm-tc-test>
 )
 
@@ -138,11 +138,12 @@ add_library( ${TARGET}-benchmark OBJECT
   
 add_executable( ${TARGET}-run
   $<TARGET_OBJECTS:${TARGET}-benchmark>
-#  $<TARGET_OBJECTS:pass-benchmark>
-#  $<TARGET_OBJECTS:stdhl-benchmark>
-#  $<TARGET_OBJECTS:casm-ir-benchmark>
-#  $<TARGET_OBJECTS:casm-rt-benchmark>
-#  $<TARGET_OBJECTS:casm-fe-benchmark>
+  # $<TARGET_OBJECTS:${TARGET}-benchmark>
+  # $<TARGET_OBJECTS:pass-benchmark>
+  # $<TARGET_OBJECTS:stdhl-benchmark>
+  # $<TARGET_OBJECTS:casm-ir-benchmark>
+  # $<TARGET_OBJECTS:casm-rt-benchmark>
+  # $<TARGET_OBJECTS:casm-fe-benchmark>
   $<TARGET_OBJECTS:casm-tc-benchmark>
 )
 
