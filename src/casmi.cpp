@@ -168,13 +168,17 @@ int main( int argc, const char* argv[] )
     pm.add< libcasm_fe::AttributionPass >();
     pm.add< libcasm_fe::SymbolResolverPass >();
     pm.add< libcasm_fe::TypeInferencePass >();
+    pm.add< libcasm_fe::ConsistencyCheckPass >();
+
     pm.add< libcasm_fe::AstDumpDotPass >();
     // pm.add< libcasm_fe::AstDumpSourcePass >();
+
     pm.add< libcasm_fe::NumericExecutionPass >(
         [&flag_dump_updates]( libcasm_fe::NumericExecutionPass& pass ) {
             // pass.setDumpUpdates( flag_dump_updates );
         } );
     // pm.add< libcasm_fe::SymbolicExecutionPass >();
+
     // pm.add< libcasm_fe::AstToCasmIRPass >();
 
     pm.add< libcasm_ir::ConsistencyCheckPass >();
@@ -186,21 +190,13 @@ int main( int argc, const char* argv[] )
 
     pm.setDefaultPass< libcasm_fe::NumericExecutionPass >();
 
-    int result = 0;
-
-    try
+    if( not pm.run( flush ) )
     {
-        pm.run( flush );
-    }
-    catch( std::exception& e )
-    {
-        flush();
-        throw e;
+        return -1;
     }
 
     flush();
-
-    return result;
+    return 0;
 }
 
 //
