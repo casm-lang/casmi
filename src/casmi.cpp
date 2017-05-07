@@ -116,6 +116,15 @@ int main( int argc, const char* argv[] )
             return -1;
         } );
 
+    u1 ast_parse_debug = false;
+    options.add( "ast-parse-debug", libstdhl::Args::NONE,
+        "display the internal parser debug information",
+        [&]( const char* option ) {
+
+            ast_parse_debug = true;
+            return 0;
+        } );
+
     options.add( 'd', "dump-updates", libstdhl::Args::NONE,
         "TBD DESCRIPTION dump updates (updateset)",
         [&flag_dump_updates]( const char* option ) {
@@ -159,12 +168,16 @@ int main( int argc, const char* argv[] )
     // register all wanted passes
     // and configure their setup hooks if desired
 
-    pm.add< libpass::LoadFilePass >( [&files]( libpass::LoadFilePass& pass ) {
+    pm.add< libpass::LoadFilePass >( [&]( libpass::LoadFilePass& pass ) {
         pass.setFilename( files.front() );
 
     } );
 
-    pm.add< libcasm_fe::SourceToAstPass >();
+    pm.add< libcasm_fe::SourceToAstPass >(
+        [&]( libcasm_fe::SourceToAstPass& pass ) {
+            pass.setDebug( ast_parse_debug );
+        } );
+
     pm.add< libcasm_fe::AttributionPass >();
     pm.add< libcasm_fe::SymbolResolverPass >();
     pm.add< libcasm_fe::TypeInferencePass >();
