@@ -50,8 +50,8 @@ int main( int argc, const char* argv[] )
     log.setSource(
         libstdhl::make< libstdhl::Log::Source >( argv[ 0 ], DESCRIPTION ) );
 
-    auto flush = [&pm]() {
-        libstdhl::Log::StringFormatter f;
+    auto flush = [&pm, &argv]() {
+        libstdhl::Log::ApplicationFormatter f( argv[ 0 ] );
         libstdhl::Log::OutputStreamSink c( std::cerr, f );
         pm.stream().flush( c );
     };
@@ -116,6 +116,15 @@ int main( int argc, const char* argv[] )
             return -1;
         } );
 
+    u1 ast_parse_debug = false;
+    options.add( "ast-parse-debug", libstdhl::Args::NONE,
+        "display the internal parser debug information",
+        [&]( const char* option ) {
+
+            ast_parse_debug = true;
+            return 0;
+        } );
+
     options.add( 'd', "dump-updates", libstdhl::Args::NONE,
         "TBD DESCRIPTION dump updates (updateset)",
         [&flag_dump_updates]( const char* option ) {
@@ -126,17 +135,13 @@ int main( int argc, const char* argv[] )
 
     for( auto& p : libpass::PassRegistry::registeredPasses() )
     {
-        // PassId    id = p.first;
         libpass::PassInfo& pi = *p.second;
 
-        if( pi.argChar() == 0 && pi.argString() == 0 )
+        if( pi.argChar() or pi.argString() )
         {
-            // internal pass, do not register a cmd line flag
-            continue;
+            options.add( pi.argChar(), pi.argString(), libstdhl::Args::NONE,
+                pi.description(), pi.argAction() );
         }
-
-        options.add( pi.argChar(), pi.argString(), libstdhl::Args::NONE,
-            pi.description(), pi.argAction() );
     }
 
     if( auto ret = options.parse( log ) )
@@ -163,21 +168,31 @@ int main( int argc, const char* argv[] )
     // register all wanted passes
     // and configure their setup hooks if desired
 
-    pm.add< libpass::LoadFilePass >( [&files]( libpass::LoadFilePass& pass ) {
+    pm.add< libpass::LoadFilePass >( [&]( libpass::LoadFilePass& pass ) {
         pass.setFilename( files.front() );
 
     } );
 
-    pm.add< libcasm_fe::SourceToAstPass >();
-    pm.add< libcasm_fe::TypeCheckPass >();
-    pm.add< libcasm_fe::AstDumpPass >();
+    pm.add< libcasm_fe::SourceToAstPass >(
+        [&]( libcasm_fe::SourceToAstPass& pass ) {
+            pass.setDebug( ast_parse_debug );
+        } );
+
+    pm.add< libcasm_fe::AttributionPass >();
+    pm.add< libcasm_fe::SymbolResolverPass >();
+    pm.add< libcasm_fe::TypeInferencePass >();
+    pm.add< libcasm_fe::ConsistencyCheckPass >();
+
+    pm.add< libcasm_fe::AstDumpDotPass >();
+    // pm.add< libcasm_fe::AstDumpSourcePass >();
+
     pm.add< libcasm_fe::NumericExecutionPass >(
         [&flag_dump_updates]( libcasm_fe::NumericExecutionPass& pass ) {
-            pass.setDumpUpdates( flag_dump_updates );
-
+            // pass.setDumpUpdates( flag_dump_updates );
         } );
-    pm.add< libcasm_fe::SymbolicExecutionPass >();
-    pm.add< libcasm_fe::AstToCasmIRPass >();
+    // pm.add< libcasm_fe::SymbolicExecutionPass >();
+
+    // pm.add< libcasm_fe::AstToCasmIRPass >();
 
     pm.add< libcasm_ir::ConsistencyCheckPass >();
     pm.add< libcasm_ir::IRDumpDebugPass >();
@@ -188,23 +203,13 @@ int main( int argc, const char* argv[] )
 
     pm.setDefaultPass< libcasm_fe::NumericExecutionPass >();
 
-    int result = 0;
-
-    try
+    if( not pm.run( flush ) )
     {
-        pm.run( flush );
-    }
-    catch( std::exception& e )
-    {
-        log.error( "pass manager triggered an exception: '"
-                   + std::string( e.what() )
-                   + "'" );
-        result = -1;
+        return -1;
     }
 
     flush();
-
-    return result;
+    return 0;
 }
 
 //
