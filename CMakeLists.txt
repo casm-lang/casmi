@@ -35,6 +35,7 @@ foreach( DEPENDENCY
     stdhl
     pass
     casm-ir
+    casm-rt
     casm-fe
     casm-tc
     )
@@ -49,7 +50,11 @@ file( GLOB_RECURSE CXX_UTS_FILES "uts/*.cpp" )
 
 
 set( TARGET casmi )
-project( ${TARGET} )
+project( ${TARGET} LANGUAGES CXX )
+
+
+set( THREADS_PREFER_PTHREAD_FLAG ON )
+find_package( Threads REQUIRED )
 
 
 include_directories(
@@ -61,16 +66,19 @@ include_directories(
   ${LIBS}/stdhl
   ${LIBS}/pass
   ${LIBS}/casm-ir
+  ${LIBS}/casm-rt
   ${LIBS}/casm-fe
   ${LIBS}/casm-tc
 )
 
 
-set( CMAKE_CXX_FLAGS          "${CMAKE_CXX_FLAGS}          -std=c++11 -Wall" )
+set( CMAKE_CXX_FLAGS          "${CMAKE_CXX_FLAGS}          -std=c++1y -Wall" )
 
 set( CMAKE_CXX_FLAGS_DEBUG    "${CMAKE_CXX_FLAGS_DEBUG}    -O0" )
 set( CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE}  -O3" )
 set( CMAKE_CXX_FLAGS_SANITIZE "${CMAKE_CXX_FLAGS_SANITIZE} -O1 -Wextra -g -fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize=undefined -fsanitize=address" )
+
+set( CMAKE_EXE_LINKER_FLAGS   "${CMAKE_EXE_LINKER_FLAGS}   -static-libgcc -static-libstdc++" )
 
 
 set( VERSION ${CMAKE_CURRENT_SOURCE_DIR}/obj/version.h )
@@ -97,9 +105,11 @@ add_executable( ${TARGET}
 
 target_link_libraries( ${TARGET}
   casm-fe
+  casm-rt
   casm-ir
   pass
   stdhl
+  Threads::Threads
 )
 
 
@@ -110,20 +120,22 @@ add_library( ${TARGET}-test OBJECT
 add_executable( ${TARGET}-check
   ${LIBS}/gtest/googletest/src/gtest_main.cc
   ${LIBS}/gtest/googletest/src/gtest-all.cc  
-  $<TARGET_OBJECTS:${TARGET}-test>
-  $<TARGET_OBJECTS:pass-test>
-  $<TARGET_OBJECTS:stdhl-test>
-  $<TARGET_OBJECTS:casm-ir-test>
-  $<TARGET_OBJECTS:casm-fe-test>
+  # $<TARGET_OBJECTS:${TARGET}-test>
+  # $<TARGET_OBJECTS:pass-test>
+  # $<TARGET_OBJECTS:stdhl-test>
+  # $<TARGET_OBJECTS:casm-ir-test>
+  # $<TARGET_OBJECTS:casm-rt-test>
+  # $<TARGET_OBJECTS:casm-fe-test>
   $<TARGET_OBJECTS:casm-tc-test>
 )
 
 target_link_libraries( ${TARGET}-check
-  casm-ir
   casm-fe
+  casm-rt
+  casm-ir
   pass
   stdhl
-  pthread
+  Threads::Threads
 )
 
 
@@ -133,15 +145,17 @@ add_library( ${TARGET}-benchmark OBJECT
   
 add_executable( ${TARGET}-run
   $<TARGET_OBJECTS:${TARGET}-benchmark>
-#  $<TARGET_OBJECTS:pass-benchmark>
-#  $<TARGET_OBJECTS:stdhl-benchmark>
-#  $<TARGET_OBJECTS:casm-ir-benchmark>
-#  $<TARGET_OBJECTS:casm-fe-benchmark>
+  # $<TARGET_OBJECTS:${TARGET}-benchmark>
+  # $<TARGET_OBJECTS:pass-benchmark>
+  # $<TARGET_OBJECTS:stdhl-benchmark>
+  # $<TARGET_OBJECTS:casm-ir-benchmark>
+  # $<TARGET_OBJECTS:casm-rt-benchmark>
+  # $<TARGET_OBJECTS:casm-fe-benchmark>
   $<TARGET_OBJECTS:casm-tc-benchmark>
 )
 
 target_link_libraries( ${TARGET}-run
-  pthread
+  Threads::Threads
 )
 
 

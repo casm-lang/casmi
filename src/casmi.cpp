@@ -40,7 +40,8 @@
     TODO
 */
 
-#define DESCRIPTION "Corinthian Abstract State Machine (CASM) Interpreter\n"
+static const std::string DESCRIPTION
+    = "Corinthian Abstract State Machine (CASM) Interpreter\n";
 
 int main( int argc, const char* argv[] )
 {
@@ -49,84 +50,98 @@ int main( int argc, const char* argv[] )
     log.setSource(
         libstdhl::make< libstdhl::Log::Source >( argv[ 0 ], DESCRIPTION ) );
 
-    auto flush = [&pm]() {
-        libstdhl::Log::StringFormatter f;
+    auto flush = [&pm, &argv]() {
+        libstdhl::Log::ApplicationFormatter f( argv[ 0 ] );
         libstdhl::Log::OutputStreamSink c( std::cerr, f );
         pm.stream().flush( c );
     };
 
-    const char* file_name = 0;
+    std::vector< std::string > files;
     u1 flag_dump_updates = false;
 
-    libstdhl::Args options( argc, argv, libstdhl::Args::DEFAULT,
-        [&file_name, &log]( const char* arg ) {
-            static int cnt = 0;
-            cnt++;
+    libstdhl::Args options(
+        argc, argv, libstdhl::Args::DEFAULT, [&log, &files]( const char* arg ) {
 
-            if( cnt > 1 )
+            if( files.size() > 0 )
             {
-                log.error( "too many file names passed" );
+                log.error( "too many files, input file '" + files.front()
+                           + "' cannot be combined with file '"
+                           + arg
+                           + "'" );
                 return 1;
             }
 
-            file_name = arg;
+            files.emplace_back( arg );
             return 0;
         } );
 
     options.add( 't', "test-case-profile", libstdhl::Args::NONE,
-        "Display the unique test profile identifier and exit.",
+        "display the unique test profile identifier",
         [&options]( const char* option ) {
-            printf( "%s\n",
-                libcasm_tc::Profile::get( libcasm_tc::Profile::INTERPRETER ) );
+
+            std::cout << libcasm_tc::Profile::get(
+                             libcasm_tc::Profile::INTERPRETER )
+                      << "\n";
+
             return -1;
         } );
 
     options.add( 'h', "help", libstdhl::Args::NONE,
-        "Display the program usage and synopsis and exit.",
-        [&options]( const char* option ) {
-            fprintf( stderr, DESCRIPTION
-                "\n"
-                "usage: %s [options] <file>\n"
-                "\n"
-                "options:\n",
-                options.programName() );
+        "display usage and synopsis", [&log, &options]( const char* option ) {
 
-            options.m_usage();
+            log.output( "\n" + DESCRIPTION + "\n" + log.source()->name()
+                        + ": usage: [options] <file>\n"
+                        + "\n"
+                        + "options: \n"
+                        + options.usage()
+                        + "\n" );
+
             return -1;
         } );
 
     options.add( 'v', "version", libstdhl::Args::NONE,
-        "Display interpreter version information",
-        [&options]( const char* option ) {
-            fprintf( stderr, DESCRIPTION
-                "\n"
-                "%s: version: %s [ %s %s ]\n"
-                "\n"
-                "%s",
-                options.programName(), VERSION, __DATE__, __TIME__, LICENSE );
+        "display version information", [&log]( const char* option ) {
+
+            log.output( "\n" + DESCRIPTION + "\n" + log.source()->name()
+                        + ": version: "
+                        + VERSION
+                        + " [ "
+                        + __DATE__
+                        + " "
+                        + __TIME__
+                        + " ]\n"
+                        + "\n"
+                        + LICENSE );
+
             return -1;
+        } );
+
+    u1 ast_parse_debug = false;
+    options.add( "ast-parse-debug", libstdhl::Args::NONE,
+        "display the internal parser debug information",
+        [&]( const char* option ) {
+
+            ast_parse_debug = true;
+            return 0;
         } );
 
     options.add( 'd', "dump-updates", libstdhl::Args::NONE,
         "TBD DESCRIPTION dump updates (updateset)",
         [&flag_dump_updates]( const char* option ) {
+
             flag_dump_updates = true;
             return 0;
         } );
 
     for( auto& p : libpass::PassRegistry::registeredPasses() )
     {
-        // PassId    id = p.first;
         libpass::PassInfo& pi = *p.second;
 
-        if( pi.argChar() == 0 && pi.argString() == 0 )
+        if( pi.argChar() or pi.argString() )
         {
-            // internal pass, do not register a cmd line flag
-            continue;
+            options.add( pi.argChar(), pi.argString(), libstdhl::Args::NONE,
+                pi.description(), pi.argAction() );
         }
-
-        options.add( pi.argChar(), pi.argString(), libstdhl::Args::NONE,
-            pi.description(), pi.argAction() );
     }
 
     if( auto ret = options.parse( log ) )
@@ -143,7 +158,7 @@ int main( int argc, const char* argv[] )
         }
     }
 
-    if( !file_name )
+    if( files.size() == 0 )
     {
         log.error( "no input file provided" );
         flush();
@@ -153,22 +168,30 @@ int main( int argc, const char* argv[] )
     // register all wanted passes
     // and configure their setup hooks if desired
 
-    pm.add< libpass::LoadFilePass >(
-        [&file_name]( libpass::LoadFilePass& pass ) {
-            pass.setFilename( file_name );
+    pm.add< libpass::LoadFilePass >( [&]( libpass::LoadFilePass& pass ) {
+        pass.setFilename( files.front() );
 
+    } );
+
+    pm.add< libcasm_fe::SourceToAstPass >(
+        [&]( libcasm_fe::SourceToAstPass& pass ) {
+            pass.setDebug( ast_parse_debug );
         } );
 
-    pm.add< libcasm_fe::SourceToAstPass >();
-    pm.add< libcasm_fe::TypeCheckPass >();
-    pm.add< libcasm_fe::AstDumpDotPass >();
-    pm.add< libcasm_fe::AstDumpSourcePass >();
-    // pm.add< libcasm_fe::NumericExecutionPass >(
-    //     [&flag_dump_updates]( libcasm_fe::NumericExecutionPass& pass ) {
-    //         pass.setDumpUpdates( flag_dump_updates );
+    pm.add< libcasm_fe::AttributionPass >();
+    pm.add< libcasm_fe::SymbolResolverPass >();
+    pm.add< libcasm_fe::TypeInferencePass >();
+    pm.add< libcasm_fe::ConsistencyCheckPass >();
 
-    //     } );
+    pm.add< libcasm_fe::AstDumpDotPass >();
+    // pm.add< libcasm_fe::AstDumpSourcePass >();
+
+    pm.add< libcasm_fe::NumericExecutionPass >(
+        [&flag_dump_updates]( libcasm_fe::NumericExecutionPass& pass ) {
+            // pass.setDumpUpdates( flag_dump_updates );
+        } );
     // pm.add< libcasm_fe::SymbolicExecutionPass >();
+
     pm.add< libcasm_fe::AstToCasmIRPass >();
 
     pm.add< libcasm_ir::ConsistencyCheckPass >();
@@ -178,25 +201,15 @@ int main( int argc, const char* argv[] )
     // pm.add< libcasm_ir::BranchEliminationPass >();
     // pm->add< libcasm_ir::ConstantFoldingPass >();
 
-    // pm.setDefaultPass< libcasm_fe::NumericExecutionPass >();
+    pm.setDefaultPass< libcasm_fe::NumericExecutionPass >();
 
-    int result = 0;
-
-    try
+    if( not pm.run( flush ) )
     {
-        pm.run( flush );
-    }
-    catch( std::exception& e )
-    {
-        log.error( "pass manager triggered an exception: '"
-                   + std::string( e.what() )
-                   + "'" );
-        result = -1;
+        return -1;
     }
 
     flush();
-
-    return result;
+    return 0;
 }
 
 //
