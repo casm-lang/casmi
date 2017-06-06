@@ -184,7 +184,7 @@ int main( int argc, const char* argv[] )
     pm.add< libcasm_fe::ConsistencyCheckPass >();
 
     pm.add< libcasm_fe::AstDumpDotPass >();
-    // pm.add< libcasm_fe::AstDumpSourcePass >();
+    pm.add< libcasm_fe::AstDumpSourcePass >();
 
     pm.add< libcasm_fe::NumericExecutionPass >(
         [&flag_dump_updates]( libcasm_fe::NumericExecutionPass& pass ) {
