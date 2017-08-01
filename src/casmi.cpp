@@ -133,6 +133,16 @@ int main( int argc, const char* argv[] )
             return 0;
         } );
 
+    std::vector< std::unique_ptr< libcasm_fe::FileSystemLoader > >
+        moduleLoaders;
+    options.add( 'I', "import-path", libstdhl::Args::REQUIRED,
+        "specifies an module import path", [&]( const char* option ) {
+            moduleLoaders.emplace_back(
+                libstdhl::make_unique< libcasm_fe::FileSystemLoader >(
+                    option, pm.stream() ) );
+            return 0;
+        } );
+
     for( auto& p : libpass::PassRegistry::registeredPasses() )
     {
         libpass::PassInfo& pi = *p.second;
@@ -173,6 +183,10 @@ int main( int argc, const char* argv[] )
     const auto projectPath = directoryOf( files.front() );
 
     libcasm_fe::FileSystemLoader loader( projectPath, pm.stream() );
+    for( auto& moduleLoader : moduleLoaders )
+    {
+        loader.addFallbackLoader( std::move( moduleLoader ) );
+    }
 
     try
     {
@@ -185,7 +199,7 @@ int main( int argc, const char* argv[] )
         return -1;
     }
 
-     // register all wanted passes
+    // register all wanted passes
     pm.add< libcasm_fe::AstDumpDotPass >();
     pm.add< libcasm_fe::AstDumpSourcePass >();
 
