@@ -165,24 +165,27 @@ int main( int argc, const char* argv[] )
         return 2;
     }
 
-    // register all wanted passes
-    // and configure their setup hooks if desired
+    const auto directoryOf = []( const std::string& path ) -> std::string {
+        const auto lastSep = path.find_last_of( '/' );
+        return ( lastSep != std::string::npos ) ? path.substr( 0, lastSep )
+                                                : std::string();
+    };
+    const auto projectPath = directoryOf( files.front() );
 
-    pm.add< libpass::LoadFilePass >( [&]( libpass::LoadFilePass& pass ) {
-        pass.setFilename( files.front() );
+    libcasm_fe::FileSystemLoader loader( projectPath, pm.stream() );
 
-    } );
+    try
+    {
+        auto loaderResult = loader.loadFile( files.front() );
+        pm.setDefaultResult( loaderResult );
+    }
+    catch( const libcasm_fe::LoaderError& e )
+    {
+        flush();
+        return -1;
+    }
 
-    pm.add< libcasm_fe::SourceToAstPass >(
-        [&]( libcasm_fe::SourceToAstPass& pass ) {
-            pass.setDebug( ast_parse_debug );
-        } );
-
-    pm.add< libcasm_fe::AttributionPass >();
-    pm.add< libcasm_fe::SymbolResolverPass >();
-    pm.add< libcasm_fe::TypeInferencePass >();
-    pm.add< libcasm_fe::ConsistencyCheckPass >();
-
+     // register all wanted passes
     pm.add< libcasm_fe::AstDumpDotPass >();
     pm.add< libcasm_fe::AstDumpSourcePass >();
 
