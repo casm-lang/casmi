@@ -180,6 +180,12 @@ int main( int argc, const char* argv[] )
         return ( lastSep != std::string::npos ) ? path.substr( 0, lastSep )
                                                 : std::string();
     };
+    const auto filenameOf = []( const std::string& path ) -> std::string {
+        const auto lastSep = path.find_last_of( '/' );
+        return ( lastSep != std::string::npos ) ? path.substr( lastSep + 1 )
+                                                : path;
+    };
+
     const auto projectPath = directoryOf( files.front() );
 
     libcasm_fe::FileSystemLoader loader( projectPath, pm.stream() );
@@ -190,11 +196,12 @@ int main( int argc, const char* argv[] )
 
     try
     {
-        auto loaderResult = loader.loadFile( files.front() );
+        auto loaderResult = loader.load( filenameOf( files.front() ) );
         pm.setDefaultResult( loaderResult );
     }
     catch( const libcasm_fe::LoaderError& e )
     {
+        log.error( e.what() );
         flush();
         return -1;
     }
