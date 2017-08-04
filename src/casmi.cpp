@@ -196,7 +196,7 @@ int main( int argc, const char* argv[] )
 
     try
     {
-        auto loaderResult = loader.load( filenameOf( files.front() ) );
+        auto loaderResult = loader.loadFile( filenameOf( files.front() ) );
         pm.setDefaultResult( loaderResult );
     }
     catch( const libcasm_fe::LoaderError& e )
