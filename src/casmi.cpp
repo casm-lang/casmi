@@ -185,6 +185,10 @@ int main( int argc, const char* argv[] )
         return ( lastSep != std::string::npos ) ? path.substr( lastSep + 1 )
                                                 : path;
     };
+    const auto withoutExtension
+        = []( const std::string& filename ) -> std::string {
+        return filename.substr( 0, filename.find_last_of( '.' ) );
+    };
 
     const auto projectPath = directoryOf( files.front() );
 
@@ -196,7 +200,8 @@ int main( int argc, const char* argv[] )
 
     try
     {
-        auto loaderResult = loader.loadFile( filenameOf( files.front() ) );
+        auto loaderResult
+            = loader.load( withoutExtension( filenameOf( files.front() ) ) );
         pm.setDefaultResult( loaderResult );
     }
     catch( const libcasm_fe::LoaderError& e )
