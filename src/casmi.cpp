@@ -23,16 +23,16 @@
 //  along with casmi. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "license.h"
-#include "version.h"
+#include "casmi/Version"
+#include "License.h"
 
-#include "libpass.h"
-#include "libstdhl.h"
+#include <libpass/libpass>
+#include <libstdhl/libstdhl>
 
-#include "libcasm-fe.h"
-#include "libcasm-ir.h"
-// #include "libcasm-rt.h"
-#include "libcasm-tc.h"
+#include <libcasm-fe/libcasm-fe>
+#include <libcasm-ir/libcasm-ir>
+// #include <libcasm-rt/libcasm-rt>
+#include "../../../lib/casm-tc/libcasm-tc.h"
 
 /**
     @brief TODO
@@ -47,8 +47,8 @@ int main( int argc, const char* argv[] )
 {
     libpass::PassManager pm;
     libstdhl::Logger log( pm.stream() );
-    log.setSource(
-        libstdhl::make< libstdhl::Log::Source >( argv[ 0 ], DESCRIPTION ) );
+    log.setSource( libstdhl::Memory::make< libstdhl::Log::Source >(
+        argv[ 0 ], DESCRIPTION ) );
 
     auto flush = [&pm, &argv]() {
         libstdhl::Log::ApplicationFormatter f( argv[ 0 ] );
@@ -104,7 +104,7 @@ int main( int argc, const char* argv[] )
 
             log.output( "\n" + DESCRIPTION + "\n" + log.source()->name()
                         + ": version: "
-                        + VERSION
+                        + REVTAG
                         + " [ "
                         + __DATE__
                         + " "

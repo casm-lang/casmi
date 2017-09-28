@@ -23,149 +23,160 @@
 #   along with casmi. If not, see <http://www.gnu.org/licenses/>.
 #
 
-cmake_minimum_required( VERSION 3.1 )
+set( PROJECT casmi )
+cmake_minimum_required( VERSION ${CMAKE_VERSION} )
 
-if( EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../gtest" )
-  set( LIBS .. )
-else()
-  set( LIBS lib )
-endif()
+set( CMAKE_VERSION 3.2 )
+set( CMAKE_INCLUDE_CURRENT_DIR ON )
 
-foreach( DEPENDENCY
-    stdhl
-    pass
-    casm-ir
-    casm-rt
-    casm-fe
-    casm-tc
-    )
-  if( NOT TARGET ${DEPENDENCY} )
-    add_subdirectory( ${LIBS}/${DEPENDENCY} lib/${DEPENDENCY} )
-  endif()  
-endforeach()
+set( CMAKE_CXX_STANDARD 14 )
+project( ${PROJECT} LANGUAGES CXX )
 
-
-file( GLOB_RECURSE CXX_SRC_FILES "src/*.cpp" )
-file( GLOB_RECURSE CXX_UTS_FILES "uts/*.cpp" )
-
-
-set( TARGET casmi )
-project( ${TARGET} LANGUAGES CXX )
-
+find_package( ECM REQUIRED CONFIG QUIET )
+set( CMAKE_MODULE_PATH
+  ${ECM_MODULE_PATH}
+  ${${PROJECT}_SOURCE_DIR}/.cmake
+  )
 
 set( THREADS_PREFER_PTHREAD_FLAG ON )
 find_package( Threads REQUIRED )
 
+include( ECMGenerateHeaders )
+include( FeatureSummary )
+include( GenerateExportHeader )
+include( CPack )
+include( LibPackage )
 
-include_directories(
-  .
-  src
-  obj
-  ${LIBS}/gtest/googletest
-  ${LIBS}/gtest/googletest/include
-  ${LIBS}/stdhl
-  ${LIBS}/pass
-  ${LIBS}/casm-ir
-  ${LIBS}/casm-rt
-  ${LIBS}/casm-fe
-  ${LIBS}/casm-tc
-)
+package_git( ${PROJECT} )
+package_git_submodule( libstdhl   master REQUIRED obj   ../../lib/stdhl   lib/stdhl   )
+package_git_submodule( libgtest   master REQUIRED build ../../lib/gtest   lib/gtest   )
+package_git_submodule( libhayai   master REQUIRED build ../../lib/hayai   lib/hayai   )
+package_git_submodule( libpass    master REQUIRED obj   ../../lib/pass    lib/pass    )
+package_git_submodule( libcasm-ir master REQUIRED obj   ../../lib/casm-ir lib/casm-ir )
+package_git_submodule( libcasm-rt master REQUIRED obj   ../../lib/casm-rt lib/casm-rt )
+package_git_submodule( libcasm-fe master REQUIRED obj   ../../lib/casm-fe lib/casm-rt )
+package_git_submodule( libcasm-tc master REQUIRED obj   ../../lib/casm-tc lib/casm-tc )
 
+add_subdirectory( src )
+#add_subdirectory( etc
+#  EXCLUDE_FROM_ALL
+#  )
 
-set( CMAKE_CXX_FLAGS          "${CMAKE_CXX_FLAGS}          -std=c++1y -Wall" )
-
-set( CMAKE_CXX_FLAGS_DEBUG    "${CMAKE_CXX_FLAGS_DEBUG}    -O0" )
-set( CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE}  -O3" )
-set( CMAKE_CXX_FLAGS_SANITIZE "${CMAKE_CXX_FLAGS_SANITIZE} -O1 -Wextra -g -fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize=undefined -fsanitize=address" )
-
-set( CMAKE_EXE_LINKER_FLAGS   "${CMAKE_EXE_LINKER_FLAGS}   -static-libgcc -static-libstdc++" )
-
-
-set( VERSION ${CMAKE_CURRENT_SOURCE_DIR}/obj/version.h )
-add_custom_command(
-  OUTPUT  ${VERSION}
-  COMMAND make -C ${CMAKE_CURRENT_SOURCE_DIR} version
-  COMMENT ""
-)
-
-set( LICENSE ${CMAKE_CURRENT_SOURCE_DIR}/obj/license.h )
-add_custom_command(
-  OUTPUT  ${LICENSE}
-  COMMAND make -C ${CMAKE_CURRENT_SOURCE_DIR} license
-  DEPENDS ${VERSION} ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt
-  COMMENT ""
-)
-
-
-add_executable( ${TARGET}
-  ${VERSION}
-  ${LICENSE}
-  ${CXX_SRC_FILES}
-)
-
-target_link_libraries( ${TARGET}
-  casm-fe
-  casm-rt
-  casm-ir
-  pass
-  stdhl
-  Threads::Threads
-)
-
-
-add_library( ${TARGET}-test OBJECT
-  ${CXX_UTS_FILES}
-)
-
-add_executable( ${TARGET}-check
-  ${LIBS}/gtest/googletest/src/gtest_main.cc
-  ${LIBS}/gtest/googletest/src/gtest-all.cc  
-  # $<TARGET_OBJECTS:${TARGET}-test>
-  # $<TARGET_OBJECTS:pass-test>
-  # $<TARGET_OBJECTS:stdhl-test>
-  # $<TARGET_OBJECTS:casm-ir-test>
-  # $<TARGET_OBJECTS:casm-rt-test>
-  # $<TARGET_OBJECTS:casm-fe-test>
-  $<TARGET_OBJECTS:casm-tc-test>
-)
-
-target_link_libraries( ${TARGET}-check
-  casm-fe
-  casm-rt
-  casm-ir
-  pass
-  stdhl
-  Threads::Threads
-)
-
-
-add_library( ${TARGET}-benchmark OBJECT
-  ${LIBS}/hayai/src/hayai_posix_main.cpp
-)
-  
-add_executable( ${TARGET}-run
-  $<TARGET_OBJECTS:${TARGET}-benchmark>
-  # $<TARGET_OBJECTS:${TARGET}-benchmark>
-  # $<TARGET_OBJECTS:pass-benchmark>
-  # $<TARGET_OBJECTS:stdhl-benchmark>
-  # $<TARGET_OBJECTS:casm-ir-benchmark>
-  # $<TARGET_OBJECTS:casm-rt-benchmark>
-  # $<TARGET_OBJECTS:casm-fe-benchmark>
-  $<TARGET_OBJECTS:casm-tc-benchmark>
-)
-
-target_link_libraries( ${TARGET}-run
-  Threads::Threads
-)
-
-
-
-if( NOT CMAKE_BUILD_TYPE )
-  set( CMAKE_BUILD_TYPE Debug
-    CACHE STRING "Choose the type of build : debug sanitize release."
-    FORCE
+add_custom_target( sync
+  COMMAND
+    make sync > ${PROJECT_BINARY_DIR}/CMakeSync 2>&1
+  DEPENDS
+    libgtest
+    libhayai
+    libstdhl
+    libpass
+    libcasm-ir
+    libcasm-rt
+    libcasm-fe
+  WORKING_DIRECTORY
+    ${PROJECT_SOURCE_DIR}
   )
-endif( NOT CMAKE_BUILD_TYPE )
+
+add_dependencies( ${PROJECT}-cpp
+  sync
+  )
 
 
-message( "* ${CMAKE_BUILD_TYPE} : ${TARGET} : ${LIBS}" )
+#
+# executable
+#
+
+add_executable( ${PROJECT}
+  $<TARGET_OBJECTS:${PROJECT}-cpp>
+  )
+
+if( ${LIBCASM_IR_FOUND} )
+  target_link_libraries( ${PROJECT}
+    ${LIBCASM_FE_LIBRARY}
+    ${LIBCASM_RT_LIBRARY}
+    ${LIBCASM_IR_LIBRARY}
+    ${LIBPASS_LIBRARY}
+    ${LIBSTDHL_LIBRARY}
+    Threads::Threads
+    )
+endif()
+
+
+set( ${PROJECT}_VERSION ${GIT_REVTAG} )
+set_property( TARGET ${PROJECT} PROPERTY VERSION   ${PROJECT}_VERSION )
+set_property( TARGET ${PROJECT} PROPERTY PREFIX "" )
+
+install(
+  TARGETS  ${PROJECT}
+  EXPORT   ${PROJECT}Targets
+  LIBRARY  DESTINATION lib
+  ARCHIVE  DESTINATION lib
+  RUNTIME  DESTINATION bin
+  INCLUDES DESTINATION include
+  )
+
+generate_export_header( ${PROJECT} )
+
+install(
+  FILES
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT}_export.h"
+  DESTINATION
+  "include/${PROJECT}"
+  )
+
+
+# #
+# # test
+# # 
+# 
+# 
+# add_executable( ${PROJECT}-check
+#   EXCLUDE_FROM_ALL
+#   $<TARGET_OBJECTS:${PROJECT}-test>
+#   )
+# 
+# if( ${LIBGTEST_FOUND} )
+#   target_link_libraries( ${PROJECT}-check
+#     ${PROJECT}
+#     ${LIBGTEST_LIBRARY}
+#     ${LIBGTEST_MAIN}
+#     Threads::Threads
+#     )
+# endif()
+# 
+# #
+# # benchmark
+# #
+# 
+# add_executable( ${PROJECT}-run
+#   EXCLUDE_FROM_ALL
+#   $<TARGET_OBJECTS:${PROJECT}-benchmark>
+#   )
+# 
+# if( ${LIBHAYAI_FOUND} )
+#   target_link_libraries( ${PROJECT}-run
+#     ${PROJECT}
+#     ${LIBHAYAI_LIBRARY}
+#     )
+# endif()
+# 
+# 
+# #
+# # cmake
+# #
+# 
+# install(
+#   FILES
+#     .cmake/Find${PROJECT}.cmake
+#   DESTINATION
+#     "share/cmake/Module/${PROJECT}"
+#   )
+
+#
+# build features and checks
+#
+
+include( LibCompile )
+compile_flags( CXX )
+compile_check()
+feature_summary( WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES )

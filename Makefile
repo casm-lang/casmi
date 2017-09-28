@@ -30,14 +30,8 @@ include .config.mk
 ENV_FLAGS = CASM=$(OBJ)/$(TARGET) CASM_ARG_PRE=--ast-exec-num
 
 
-version: $(OBJ)/version.h
-$(OBJ)/version.h: $(OBJ)
-	@echo "const char VERSION[] =" > $@
-	@echo "\""`git describe --always --tags --dirty`"\"" >> $@
-	@echo ";" >> $@
-
-license: $(OBJ)/license.h
-$(OBJ)/license.h: $(OBJ) LICENSE.txt
+license: $(OBJ)/src/license.h
+$(OBJ)/src/license.h: $(OBJ) LICENSE.txt
 	@echo "const char LICENSE[] =" > $@
 	@head -n `grep -ne "------" LICENSE.txt | grep -Eo "[0-9]*"` LICENSE.txt | \
 		sed "/-----/d" | \
