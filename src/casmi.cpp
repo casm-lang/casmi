@@ -104,7 +104,7 @@ int main( int argc, const char* argv[] )
 
             log.output( "\n" + DESCRIPTION + "\n" + log.source()->name()
                         + ": version: "
-                        + REVTAG
+                        + casmi::REVTAG
                         + " [ "
                         + __DATE__
                         + " "
