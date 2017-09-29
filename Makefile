@@ -25,7 +25,7 @@
 
 TARGET = casmi
 
-include .config.mk
+include .cmake/config.mk
 
 ENV_FLAGS = CASM=$(OBJ)/$(TARGET) CASM_ARG_PRE=--ast-exec-num
 

@@ -24,38 +24,33 @@
 #
 
 set( PROJECT casmi )
+
 cmake_minimum_required( VERSION ${CMAKE_VERSION} )
 
+project( ${PROJECT} LANGUAGES C CXX )
+set( CMAKE_CXX_STANDARD 14 )
 set( CMAKE_VERSION 3.2 )
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
+set( CMAKE_MODULE_PATH ${${PROJECT}_SOURCE_DIR}/.cmake )
 
-set( CMAKE_CXX_STANDARD 14 )
-project( ${PROJECT} LANGUAGES CXX )
+include( LibPackage )
 
-find_package( ECM REQUIRED CONFIG QUIET )
-set( CMAKE_MODULE_PATH
-  ${ECM_MODULE_PATH}
-  ${${PROJECT}_SOURCE_DIR}/.cmake
-  )
+package_git( ${PROJECT} )
+package_git_submodule( libstdhl   master REQUIRED obj   ../../lib/stdhl   lib/stdhl   )
+package_git_submodule( libpass    master REQUIRED obj   ../../lib/pass    lib/pass    )
+package_git_submodule( libcasm-ir master REQUIRED obj   ../../lib/casm-ir lib/casm-ir )
+package_git_submodule( libcasm-rt master REQUIRED obj   ../../lib/casm-rt lib/casm-rt )
+package_git_submodule( libcasm-fe master REQUIRED obj   ../../lib/casm-fe lib/casm-fe )
+package_git_submodule( libcasm-tc master REQUIRED obj   ../../lib/casm-tc lib/casm-tc )
+package_git_submodule( libgtest   master REQUIRED build ../../lib/gtest   lib/gtest   )
+package_git_submodule( libhayai   master REQUIRED build ../../lib/hayai   lib/hayai   )
 
-set( THREADS_PREFER_PTHREAD_FLAG ON )
 find_package( Threads REQUIRED )
 
 include( ECMGenerateHeaders )
 include( FeatureSummary )
 include( GenerateExportHeader )
 include( CPack )
-include( LibPackage )
-
-package_git( ${PROJECT} )
-package_git_submodule( libstdhl   master REQUIRED obj   ../../lib/stdhl   lib/stdhl   )
-package_git_submodule( libgtest   master REQUIRED build ../../lib/gtest   lib/gtest   )
-package_git_submodule( libhayai   master REQUIRED build ../../lib/hayai   lib/hayai   )
-package_git_submodule( libpass    master REQUIRED obj   ../../lib/pass    lib/pass    )
-package_git_submodule( libcasm-ir master REQUIRED obj   ../../lib/casm-ir lib/casm-ir )
-package_git_submodule( libcasm-rt master REQUIRED obj   ../../lib/casm-rt lib/casm-rt )
-package_git_submodule( libcasm-fe master REQUIRED obj   ../../lib/casm-fe lib/casm-rt )
-package_git_submodule( libcasm-tc master REQUIRED obj   ../../lib/casm-tc lib/casm-tc )
 
 add_subdirectory( src )
 #add_subdirectory( etc
@@ -90,7 +85,7 @@ add_executable( ${PROJECT}
   $<TARGET_OBJECTS:${PROJECT}-cpp>
   )
 
-if( ${LIBCASM_IR_FOUND} )
+if( ${LIBCASM_FE_FOUND} )
   target_link_libraries( ${PROJECT}
     ${LIBCASM_FE_LIBRARY}
     ${LIBCASM_RT_LIBRARY}
@@ -113,15 +108,6 @@ install(
   ARCHIVE  DESTINATION lib
   RUNTIME  DESTINATION bin
   INCLUDES DESTINATION include
-  )
-
-generate_export_header( ${PROJECT} )
-
-install(
-  FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT}_export.h"
-  DESTINATION
-  "include/${PROJECT}"
   )
 
 
