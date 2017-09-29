@@ -200,9 +200,13 @@ int main( int argc, const char* argv[] )
 
     try
     {
-        auto loaderResult
+        const auto specification
             = loader.load( withoutExtension( filenameOf( files.front() ) ) );
-        pm.setDefaultResult( loaderResult );
+
+        libpass::PassResult result;
+        result.setResult< libcasm_fe::ConsistencyCheckPass >(
+            std::make_shared< libcasm_fe::ConsistencyCheckPass::Data >( specification ) );
+        pm.setDefaultResult( result );
     }
     catch( const libcasm_fe::LoaderError& e )
     {
