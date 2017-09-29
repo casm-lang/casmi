@@ -23,15 +23,15 @@
 //  along with casmi. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "casmi/Version"
 #include "License.h"
-
-#include <libpass/libpass>
-#include <libstdhl/libstdhl>
+#include "casmi/Version"
 
 #include <libcasm-fe/libcasm-fe>
 #include <libcasm-ir/libcasm-ir>
+#include <libpass/libpass>
+#include <libstdhl/libstdhl>
 // #include <libcasm-rt/libcasm-rt>
+
 #include "../../../lib/casm-tc/libcasm-tc.h"
 
 /**
