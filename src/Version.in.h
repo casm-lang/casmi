@@ -23,8 +23,8 @@
 //  along with casmi. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef _LIBCASM_IR_VERSION_H_
-#define _LIBCASM_IR_VERSION_H_
+#ifndef _CASMI_VERSION_H_
+#define _CASMI_VERSION_H_
 
 /**
    @brief    TODO
@@ -41,7 +41,7 @@ namespace libcasm_ir
     constexpr const char* BRANCH = "@GIT_BRANCH@";
 }
 
-#endif // _LIBCASM_IR_VERSION_H_
+#endif // _CASMI_VERSION_H_
 
 //
 //  Local variables:
