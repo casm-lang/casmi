@@ -29,6 +29,7 @@ include_directories(
   ${LIBCASM_IR_INCLUDE_DIR}
   ${LIBCASM_RT_INCLUDE_DIR}
   ${LIBCASM_FE_INCLUDE_DIR}
+  ${LIBCASM_TC_INCLUDE_DIR}
   )
 
 add_library( ${PROJECT}-cpp OBJECT

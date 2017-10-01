@@ -28,11 +28,10 @@
 
 #include <libcasm-fe/libcasm-fe>
 #include <libcasm-ir/libcasm-ir>
+#include <libcasm-tc/Profile>
 #include <libpass/libpass>
 #include <libstdhl/libstdhl>
 // #include <libcasm-rt/libcasm-rt>
-
-#include "../../../lib/casm-tc/libcasm-tc.h"
 
 /**
     @brief TODO

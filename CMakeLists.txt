@@ -53,9 +53,9 @@ include( GenerateExportHeader )
 include( CPack )
 
 add_subdirectory( src )
-#add_subdirectory( etc
-#  EXCLUDE_FROM_ALL
-#  )
+add_subdirectory( etc
+  EXCLUDE_FROM_ALL
+  )
 
 add_custom_target( sync
   COMMAND
@@ -68,6 +68,7 @@ add_custom_target( sync
     libcasm-ir
     libcasm-rt
     libcasm-fe
+    libcasm-tc
   WORKING_DIRECTORY
     ${PROJECT_SOURCE_DIR}
   )
@@ -98,8 +99,59 @@ endif()
 
 
 set( ${PROJECT}_VERSION ${GIT_REVTAG} )
-set_property( TARGET ${PROJECT} PROPERTY VERSION   ${PROJECT}_VERSION )
-set_property( TARGET ${PROJECT} PROPERTY PREFIX "" )
+set_property( TARGET ${PROJECT} PROPERTY VERSION ${${PROJECT}_VERSION} )
+set_property( TARGET ${PROJECT} PROPERTY PREFIX  "" )
+
+
+#
+# test
+#
+
+add_executable( ${PROJECT}-check
+  EXCLUDE_FROM_ALL
+  $<TARGET_OBJECTS:${PROJECT}-test>
+  )
+
+if( ${LIBCASM_TC_FOUND} )
+  target_link_libraries( ${PROJECT}-check
+    -Wl,--whole-archive
+    ${LIBCASM_TC_TEST}
+    -Wl,--no-whole-archive
+    ${LIBPASS_LIBRARY}
+    ${LIBSTDHL_LIBRARY}
+    ${LIBGTEST_LIBRARY}
+    ${LIBGTEST_MAIN}
+    Threads::Threads
+    )
+endif()
+
+
+#
+# benchmark
+#
+
+add_executable( ${PROJECT}-run
+  EXCLUDE_FROM_ALL
+  $<TARGET_OBJECTS:${PROJECT}-benchmark>
+  )
+
+if( ${LIBCASM_TC_FOUND} )
+  target_link_libraries( ${PROJECT}-run
+    -Wl,--whole-archive
+    ${LIBCASM_TC_TEST}
+    -Wl,--no-whole-archive
+    ${LIBPASS_LIBRARY}
+    ${LIBSTDHL_LIBRARY}
+    ${LIBHAYAI_LIBRARY}
+    ${LIBGTEST_LIBRARY}
+    Threads::Threads
+    )
+endif()
+
+
+#
+# install
+#
 
 install(
   TARGETS  ${PROJECT}
@@ -112,51 +164,16 @@ install(
 
 
 # #
-# # test
-# # 
-# 
-# 
-# add_executable( ${PROJECT}-check
-#   EXCLUDE_FROM_ALL
-#   $<TARGET_OBJECTS:${PROJECT}-test>
-#   )
-# 
-# if( ${LIBGTEST_FOUND} )
-#   target_link_libraries( ${PROJECT}-check
-#     ${PROJECT}
-#     ${LIBGTEST_LIBRARY}
-#     ${LIBGTEST_MAIN}
-#     Threads::Threads
-#     )
-# endif()
-# 
-# #
-# # benchmark
-# #
-# 
-# add_executable( ${PROJECT}-run
-#   EXCLUDE_FROM_ALL
-#   $<TARGET_OBJECTS:${PROJECT}-benchmark>
-#   )
-# 
-# if( ${LIBHAYAI_FOUND} )
-#   target_link_libraries( ${PROJECT}-run
-#     ${PROJECT}
-#     ${LIBHAYAI_LIBRARY}
-#     )
-# endif()
-# 
-# 
-# #
 # # cmake
 # #
-# 
+
 # install(
 #   FILES
 #     .cmake/Find${PROJECT}.cmake
 #   DESTINATION
 #     "share/cmake/Module/${PROJECT}"
 #   )
+
 
 #
 # build features and checks

@@ -23,8 +23,19 @@
 //  along with casmi. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "gtest/gtest.h"
+#ifndef _CASMI_TEST_MAIN_H_
+#define _CASMI_TEST_MAIN_H_
 
-TEST( casmi, example )
-{
-}
+#include <libstdhl/Test>
+
+#endif // _CASMI_TEST_MAIN_H_
+
+//
+//  Local variables:
+//  mode: c++
+//  indent-tabs-mode: nil
+//  c-basic-offset: 4
+//  tab-width: 4
+//  End:
+//  vim:noexpandtab:sw=4:ts=4:
+//
