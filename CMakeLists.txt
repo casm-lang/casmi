@@ -138,7 +138,7 @@ add_executable( ${PROJECT}-run
 if( ${LIBCASM_TC_FOUND} )
   target_link_libraries( ${PROJECT}-run
     -Wl,--whole-archive
-    ${LIBCASM_TC_TEST}
+    ${LIBCASM_TC_BENCHMARK}
     -Wl,--no-whole-archive
     ${LIBPASS_LIBRARY}
     ${LIBSTDHL_LIBRARY}
