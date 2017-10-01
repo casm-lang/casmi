@@ -61,14 +61,11 @@ add_custom_target( sync
   COMMAND
     make sync > ${PROJECT_BINARY_DIR}/CMakeSync 2>&1
   DEPENDS
-    libgtest
-    libhayai
     libstdhl
     libpass
     libcasm-ir
     libcasm-rt
     libcasm-fe
-    libcasm-tc
   WORKING_DIRECTORY
     ${PROJECT_SOURCE_DIR}
   )
@@ -77,21 +74,36 @@ add_dependencies( ${PROJECT}-cpp
   sync
   )
 
+add_custom_target( sync-other
+  COMMAND
+    make sync > ${PROJECT_BINARY_DIR}/CMakeSync 2>&1
+  DEPENDS
+    libgtest
+    libhayai
+    libcasm-tc
+  WORKING_DIRECTORY
+    ${PROJECT_SOURCE_DIR}
+  )
+
+add_dependencies( ${PROJECT}-test
+  sync-other
+  )
+
+add_dependencies( ${PROJECT}-benchmark
+  sync-other
+  )
+
 
 #
 # executable
 #
-
-set( CMAKE_FIND_LIBRARY_SUFFIXES ".a" )
-set( BUILD_SHARED_LIBRARIES      OFF )
-set( CMAKE_EXE_LINKER_FLAGS      "-static" )
 
 add_executable( ${PROJECT}
   $<TARGET_OBJECTS:${PROJECT}-cpp>
   )
 
 if( ${LIBCASM_FE_FOUND} )
-  target_link_libraries( ${PROJECT}
+  target_link_libraries( ${PROJECT} PUBLIC "-static"
     ${LIBCASM_FE_LIBRARY}
     ${LIBCASM_RT_LIBRARY}
     ${LIBCASM_IR_LIBRARY}
@@ -100,7 +112,6 @@ if( ${LIBCASM_FE_FOUND} )
     Threads::Threads
     )
 endif()
-
 
 set( ${PROJECT}_VERSION ${GIT_REVTAG} )
 set_property( TARGET ${PROJECT} PROPERTY VERSION ${${PROJECT}_VERSION} )
