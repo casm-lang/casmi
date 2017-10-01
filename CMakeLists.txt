@@ -57,7 +57,7 @@ add_subdirectory( etc
   EXCLUDE_FROM_ALL
   )
 
-add_custom_target( sync
+add_custom_target( ${PROJECT}-sync
   COMMAND
     make sync > ${PROJECT_BINARY_DIR}/CMakeSync 2>&1
   DEPENDS
@@ -71,10 +71,10 @@ add_custom_target( sync
   )
 
 add_dependencies( ${PROJECT}-cpp
-  sync
+  ${PROJECT}-sync
   )
 
-add_custom_target( sync-other
+add_custom_target( ${PROJECT}-sync-other
   COMMAND
     make sync > ${PROJECT_BINARY_DIR}/CMakeSync 2>&1
   DEPENDS
@@ -86,11 +86,11 @@ add_custom_target( sync-other
   )
 
 add_dependencies( ${PROJECT}-test
-  sync-other
+  ${PROJECT}-sync-other
   )
 
 add_dependencies( ${PROJECT}-benchmark
-  sync-other
+  ${PROJECT}-sync-other
   )
 
 
@@ -197,4 +197,8 @@ install(
 include( LibCompile )
 compile_flags( CXX )
 compile_check()
-feature_summary( WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES )
+
+feature_summary( WHAT
+  PACKAGES_NOT_FOUND
+  DISABLED_FEATURES
+  )
