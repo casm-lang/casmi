@@ -1,32 +1,32 @@
-
 [submodule "lib/gtest"]
 	path = lib/gtest
 	url = https://github.com/google/googletest
-
+	branch = master
 [submodule "lib/hayai"]
 	path = lib/hayai
 	url = https://github.com/nickbruun/hayai
-
+	branch = master
 [submodule "lib/stdhl"]
 	path = lib/stdhl
 	url = git@github.com:ppaulweber/libstdhl
-
+	branch = master
 [submodule "lib/pass"]
 	path = lib/pass
 	url = git@github.com:ppaulweber/libpass
-
-[submodule "lib/casm-fe"]
-	path = lib/casm-fe
-	url = git@github.com:casm-lang/libcasm-fe
-
+	branch = master
 [submodule "lib/casm-ir"]
 	path = lib/casm-ir
 	url = git@github.com:casm-lang/libcasm-ir
-
+	branch = master
 [submodule "lib/casm-rt"]
 	path = lib/casm-rt
 	url = git@github.com:casm-lang/libcasm-rt
-
+	branch = master
+[submodule "lib/casm-fe"]
+	path = lib/casm-fe
+	url = git@github.com:casm-lang/libcasm-fe
+	branch = master
 [submodule "lib/casm-tc"]
 	path = lib/casm-tc
 	url = git@github.com:casm-lang/libcasm-tc
+	branch = master

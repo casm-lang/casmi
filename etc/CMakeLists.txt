@@ -23,20 +23,5 @@
 #   along with casmi. If not, see <http://www.gnu.org/licenses/>.
 #
 
-TARGET = casmi
-
-include .cmake/config.mk
-
-ENV_FLAGS = CASM=$(OBJ)/$(TARGET) CASM_ARG_PRE=--ast-exec-num
-
-
-license: $(OBJ)/src/license.h
-$(OBJ)/src/license.h: $(OBJ) LICENSE.txt
-	@echo "const char LICENSE[] =" > $@
-	@head -n `grep -ne "------" LICENSE.txt | grep -Eo "[0-9]*"` LICENSE.txt | \
-		sed "/-----/d" | \
-		sed "/This file is part of/d" | \
-		sed "s/^/    /" | \
-		sed "s/^/\"/g" | \
-		sed "s/$$/\\\n\"/g" >> $@
-	@echo ";" >> $@
+add_subdirectory( test )
+add_subdirectory( benchmark )

@@ -23,8 +23,32 @@
 //  along with casmi. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "gtest/gtest.h"
+#ifndef _CASMI_VERSION_H_
+#define _CASMI_VERSION_H_
 
-TEST( casmi, example )
+/**
+   @brief    TODO
+
+   TODO
+
+   variables are automatically set by CMake
+*/
+
+namespace casmi
 {
+    constexpr const char* REVTAG = "@GIT_REVTAG@";
+    constexpr const char* COMMIT = "@GIT_COMMIT@";
+    constexpr const char* BRANCH = "@GIT_BRANCH@";
 }
+
+#endif // _CASMI_VERSION_H_
+
+//
+//  Local variables:
+//  mode: c++
+//  indent-tabs-mode: nil
+//  c-basic-offset: 4
+//  tab-width: 4
+//  End:
+//  vim:noexpandtab:sw=4:ts=4:
+//

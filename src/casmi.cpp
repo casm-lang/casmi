@@ -23,16 +23,14 @@
 //  along with casmi. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "license.h"
-#include "version.h"
+#include "License.h"
+#include "casmi/Version"
 
-#include "libpass.h"
-#include "libstdhl.h"
-
-#include "libcasm-fe.h"
-#include "libcasm-ir.h"
-// #include "libcasm-rt.h"
-#include "libcasm-tc.h"
+#include <libcasm-fe/libcasm-fe>
+#include <libcasm-ir/libcasm-ir>
+#include <libpass/libpass>
+#include <libstdhl/libstdhl>
+// #include <libcasm-rt/libcasm-rt>
 
 /**
     @brief TODO
@@ -42,16 +40,20 @@
 
 static const std::string DESCRIPTION
     = "Corinthian Abstract State Machine (CASM) Interpreter\n";
+static const std::string PROFILE = "casmi";
 
 int main( int argc, const char* argv[] )
 {
+    assert( argc > 0 );
+    const std::string app_name = argv[ 0 ];
+
     libpass::PassManager pm;
     libstdhl::Logger log( pm.stream() );
-    log.setSource(
-        libstdhl::make< libstdhl::Log::Source >( argv[ 0 ], DESCRIPTION ) );
+    log.setSource( libstdhl::Memory::make< libstdhl::Log::Source >(
+        app_name, DESCRIPTION ) );
 
-    auto flush = [&pm, &argv]() {
-        libstdhl::Log::ApplicationFormatter f( argv[ 0 ] );
+    auto flush = [&pm, &app_name]() {
+        libstdhl::Log::ApplicationFormatter f( app_name );
         libstdhl::Log::OutputStreamSink c( std::cerr, f );
         pm.stream().flush( c );
     };
@@ -60,7 +62,7 @@ int main( int argc, const char* argv[] )
     u1 flag_dump_updates = false;
 
     libstdhl::Args options(
-        argc, argv, libstdhl::Args::DEFAULT, [&log, &files]( const char* arg ) {
+        argc, argv, libstdhl::Args::DEFAULT, [&files, &log]( const char* arg ) {
 
             if( files.size() > 0 )
             {
@@ -76,13 +78,8 @@ int main( int argc, const char* argv[] )
         } );
 
     options.add( 't', "test-case-profile", libstdhl::Args::NONE,
-        "display the unique test profile identifier",
-        [&options]( const char* option ) {
-
-            std::cout << libcasm_tc::Profile::get(
-                             libcasm_tc::Profile::INTERPRETER )
-                      << "\n";
-
+        "display the unique test profile identifier", []( const char* option ) {
+            std::cout << PROFILE << "\n";
             return -1;
         } );
 
@@ -104,7 +101,7 @@ int main( int argc, const char* argv[] )
 
             log.output( "\n" + DESCRIPTION + "\n" + log.source()->name()
                         + ": version: "
-                        + VERSION
+                        + casmi::REVTAG
                         + " [ "
                         + __DATE__
                         + " "
@@ -133,12 +130,11 @@ int main( int argc, const char* argv[] )
             return 0;
         } );
 
-    std::vector< std::unique_ptr< libcasm_fe::FileSystemLoader > >
-        moduleLoaders;
+    std::vector< std::unique_ptr< libcasm_fe::Loader > > moduleLoaders;
     options.add( 'I', "import-path", libstdhl::Args::REQUIRED,
         "specifies an module import path", [&]( const char* option ) {
             moduleLoaders.emplace_back(
-                libstdhl::make_unique< libcasm_fe::FileSystemLoader >(
+                libstdhl::Memory::make_unique< libcasm_fe::FileSystemLoader >(
                     option, pm.stream() ) );
             return 0;
         } );
