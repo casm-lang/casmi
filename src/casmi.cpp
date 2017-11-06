@@ -181,6 +181,7 @@ int main( int argc, const char* argv[] )
     pm.add< libcasm_fe::TypeInferencePass >();
     pm.add< libcasm_fe::TypeCheckPass >();
     pm.add< libcasm_fe::ConsistencyCheckPass >();
+    pm.add< libcasm_fe::FrameSizeDeterminationPass >();
 
     pm.add< libcasm_fe::AstDumpDotPass >();
     pm.add< libcasm_fe::AstDumpSourcePass >();
