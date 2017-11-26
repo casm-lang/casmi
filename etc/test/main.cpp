@@ -27,8 +27,7 @@
 
 void casmi_main_dummy( void )
 {
-    const auto source
-        = libstdhl::Memory::make< libstdhl::Log::Source >( "casmi", "CASMI" );
+    const auto source = libstdhl::Memory::make< libstdhl::Log::Source >( "casmi", "CASMI" );
 
     libstdhl::Log::defaultSource( source );
 }

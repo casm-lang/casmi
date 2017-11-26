@@ -28,7 +28,7 @@
 
 #include <libstdhl/Test>
 
-#endif // _CASMI_TEST_MAIN_H_
+#endif  // _CASMI_TEST_MAIN_H_
 
 //
 //  Local variables:

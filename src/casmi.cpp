@@ -38,8 +38,7 @@
     TODO
 */
 
-static const std::string DESCRIPTION
-    = "Corinthian Abstract State Machine (CASM) Interpreter\n";
+static const std::string DESCRIPTION = "Corinthian Abstract State Machine (CASM) Interpreter\n";
 static const std::string PROFILE = "casmi";
 
 int main( int argc, const char* argv[] )
@@ -49,8 +48,7 @@ int main( int argc, const char* argv[] )
 
     libpass::PassManager pm;
     libstdhl::Logger log( pm.stream() );
-    log.setSource( libstdhl::Memory::make< libstdhl::Log::Source >(
-        app_name, DESCRIPTION ) );
+    log.setSource( libstdhl::Memory::make< libstdhl::Log::Source >( app_name, DESCRIPTION ) );
 
     auto flush = [&pm, &app_name]() {
         libstdhl::Log::ApplicationFormatter f( app_name );
@@ -61,60 +59,62 @@ int main( int argc, const char* argv[] )
     std::vector< std::string > files;
     u1 flag_dump_updates = false;
 
-    libstdhl::Args options(
-        argc, argv, libstdhl::Args::DEFAULT, [&files, &log]( const char* arg ) {
+    libstdhl::Args options( argc, argv, libstdhl::Args::DEFAULT, [&files, &log]( const char* arg ) {
 
-            if( files.size() > 0 )
-            {
-                log.error( "too many files, input file '" + files.front()
-                           + "' cannot be combined with file '"
-                           + arg
-                           + "'" );
-                return 1;
-            }
+        if( files.size() > 0 )
+        {
+            log.error(
+                "too many files, input file '" + files.front() +
+                "' cannot be combined with file '" + arg + "'" );
+            return 1;
+        }
 
-            files.emplace_back( arg );
-            return 0;
-        } );
+        files.emplace_back( arg );
+        return 0;
+    } );
 
-    options.add( 't', "test-case-profile", libstdhl::Args::NONE,
-        "display the unique test profile identifier", []( const char* option ) {
+    options.add(
+        't',
+        "test-case-profile",
+        libstdhl::Args::NONE,
+        "display the unique test profile identifier",
+        []( const char* option ) {
             std::cout << PROFILE << "\n";
             return -1;
         } );
 
-    options.add( 'h', "help", libstdhl::Args::NONE,
-        "display usage and synopsis", [&log, &options]( const char* option ) {
+    options.add(
+        'h',
+        "help",
+        libstdhl::Args::NONE,
+        "display usage and synopsis",
+        [&log, &options]( const char* option ) {
 
-            log.output( "\n" + DESCRIPTION + "\n" + log.source()->name()
-                        + ": usage: [options] <file>\n"
-                        + "\n"
-                        + "options: \n"
-                        + options.usage()
-                        + "\n" );
+            log.output(
+                "\n" + DESCRIPTION + "\n" + log.source()->name() + ": usage: [options] <file>\n" +
+                "\n" + "options: \n" + options.usage() + "\n" );
 
             return -1;
         } );
 
-    options.add( 'v', "version", libstdhl::Args::NONE,
-        "display version information", [&log]( const char* option ) {
+    options.add(
+        'v',
+        "version",
+        libstdhl::Args::NONE,
+        "display version information",
+        [&log]( const char* option ) {
 
-            log.output( "\n" + DESCRIPTION + "\n" + log.source()->name()
-                        + ": version: "
-                        + casmi::REVTAG
-                        + " [ "
-                        + __DATE__
-                        + " "
-                        + __TIME__
-                        + " ]\n"
-                        + "\n"
-                        + LICENSE );
+            log.output(
+                "\n" + DESCRIPTION + "\n" + log.source()->name() + ": version: " + casmi::REVTAG +
+                " [ " + __DATE__ + " " + __TIME__ + " ]\n" + "\n" + LICENSE );
 
             return -1;
         } );
 
     u1 ast_parse_debug = false;
-    options.add( "ast-parse-debug", libstdhl::Args::NONE,
+    options.add(
+        "ast-parse-debug",
+        libstdhl::Args::NONE,
         "display the internal parser debug information",
         [&]( const char* option ) {
 
@@ -122,7 +122,10 @@ int main( int argc, const char* argv[] )
             return 0;
         } );
 
-    options.add( 'd', "dump-updates", libstdhl::Args::NONE,
+    options.add(
+        'd',
+        "dump-updates",
+        libstdhl::Args::NONE,
         "TBD DESCRIPTION dump updates (updateset)",
         [&flag_dump_updates]( const char* option ) {
 
@@ -136,8 +139,12 @@ int main( int argc, const char* argv[] )
 
         if( pi.argChar() or pi.argString() )
         {
-            options.add( pi.argChar(), pi.argString(), libstdhl::Args::NONE,
-                pi.description(), pi.argAction() );
+            options.add(
+                pi.argChar(),
+                pi.argString(),
+                libstdhl::Args::NONE,
+                pi.description(),
+                pi.argAction() );
         }
     }
 
@@ -171,9 +178,7 @@ int main( int argc, const char* argv[] )
     } );
 
     pm.add< libcasm_fe::SourceToAstPass >(
-        [&]( libcasm_fe::SourceToAstPass& pass ) {
-            pass.setDebug( ast_parse_debug );
-        } );
+        [&]( libcasm_fe::SourceToAstPass& pass ) { pass.setDebug( ast_parse_debug ); } );
 
     pm.add< libcasm_fe::AttributionPass >();
     pm.add< libcasm_fe::SymbolRegistrationPass >();

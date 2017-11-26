@@ -41,7 +41,7 @@ namespace casmi
     constexpr const char* BRANCH = "@GIT_BRANCH@";
 }
 
-#endif // _CASMI_VERSION_H_
+#endif  // _CASMI_VERSION_H_
 
 //
 //  Local variables:
