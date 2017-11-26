@@ -25,6 +25,15 @@
 
 TARGET = casmi
 
+FORMAT  = src
+FORMAT += src/*
+FORMAT += src/*/*
+FORMAT += etc
+FORMAT += etc/*
+FORMAT += etc/*/*
+
+UPDATE_ROOT = ../../lib/stdhl
+
 include .cmake/config.mk
 
 ENV_FLAGS = CASM=$(OBJ)/$(TARGET) CASM_ARG_PRE=--ast-exec-num
