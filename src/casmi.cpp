@@ -30,7 +30,6 @@
 #include <libcasm-ir/libcasm-ir>
 #include <libpass/libpass>
 #include <libstdhl/libstdhl>
-// #include <libcasm-rt/libcasm-rt>
 
 /**
     @brief TODO
@@ -78,7 +77,7 @@ int main( int argc, const char* argv[] )
         "test-case-profile",
         libstdhl::Args::NONE,
         "display the unique test profile identifier",
-        []( const char* option ) {
+        []( const char* ) {
             std::cout << PROFILE << "\n";
             return -1;
         } );
@@ -88,7 +87,7 @@ int main( int argc, const char* argv[] )
         "help",
         libstdhl::Args::NONE,
         "display usage and synopsis",
-        [&log, &options]( const char* option ) {
+        [&log, &options]( const char* ) {
 
             log.output(
                 "\n" + DESCRIPTION + "\n" + log.source()->name() + ": usage: [options] <file>\n" +
@@ -98,11 +97,7 @@ int main( int argc, const char* argv[] )
         } );
 
     options.add(
-        'v',
-        "version",
-        libstdhl::Args::NONE,
-        "display version information",
-        [&log]( const char* option ) {
+        'v', "version", libstdhl::Args::NONE, "display version information", [&log]( const char* ) {
 
             log.output(
                 "\n" + DESCRIPTION + "\n" + log.source()->name() + ": version: " + casmi::REVTAG +
@@ -133,9 +128,14 @@ int main( int argc, const char* argv[] )
             return 0;
         } );
 
-    for( auto& p : libpass::PassRegistry::registeredPasses() )
+    // add passes to the pass manager to setup command-line options
+
+    pm.add< libcasm_fe::AstDumpDotPass >();
+    pm.add< libcasm_fe::NumericExecutionPass >();
+
+    for( auto id : pm.passes() )
     {
-        libpass::PassInfo& pi = *p.second;
+        libpass::PassInfo& pi = libpass::PassRegistry::passInfo( id );
 
         if( pi.argChar() or pi.argString() )
         {
@@ -147,6 +147,8 @@ int main( int argc, const char* argv[] )
                 pi.argAction() );
         }
     }
+
+    // parse the command-line
 
     if( auto ret = options.parse( log ) )
     {
@@ -169,45 +171,27 @@ int main( int argc, const char* argv[] )
         return 2;
     }
 
-    // register all wanted passes
-    // and configure their setup hooks if desired
+    // set default settings
 
-    pm.add< libpass::LoadFilePass >( [&]( libpass::LoadFilePass& pass ) {
-        pass.setFilename( files.front() );
+    libpass::PassResult pr;
+    pr.setInput< libpass::LoadFilePass >( files.front() );
+
+    pm.setDefaultResult( pr );
+    pm.setDefaultPass< libcasm_fe::NumericExecutionPass >();
+
+    // set pass-specific configurations
+
+    pm.set< libcasm_fe::SourceToAstPass >( [&]( libcasm_fe::SourceToAstPass& pass ) {
+        pass.setDebug( ast_parse_debug );
 
     } );
 
-    pm.add< libcasm_fe::SourceToAstPass >(
-        [&]( libcasm_fe::SourceToAstPass& pass ) { pass.setDebug( ast_parse_debug ); } );
+    pm.set< libcasm_fe::NumericExecutionPass >( [&]( libcasm_fe::NumericExecutionPass& pass ) {
+        // pass.setDumpUpdates( flag_dump_updates );
 
-    pm.add< libcasm_fe::AttributionPass >();
-    pm.add< libcasm_fe::SymbolRegistrationPass >();
-    pm.add< libcasm_fe::SymbolResolverPass >();
-    pm.add< libcasm_fe::PropertyResolverPass >();
-    pm.add< libcasm_fe::TypeInferencePass >();
-    pm.add< libcasm_fe::TypeCheckPass >();
-    pm.add< libcasm_fe::ConsistencyCheckPass >();
-    pm.add< libcasm_fe::FrameSizeDeterminationPass >();
+    } );
 
-    pm.add< libcasm_fe::AstDumpDotPass >();
-    pm.add< libcasm_fe::AstDumpSourcePass >();
-
-    pm.add< libcasm_fe::NumericExecutionPass >(
-        [&flag_dump_updates]( libcasm_fe::NumericExecutionPass& pass ) {
-            // pass.setDumpUpdates( flag_dump_updates );
-        } );
-    // pm.add< libcasm_fe::SymbolicExecutionPass >();
-
-    pm.add< libcasm_fe::AstToCasmIRPass >();
-
-    pm.add< libcasm_ir::ConsistencyCheckPass >();
-    pm.add< libcasm_ir::IRDumpDebugPass >();
-    pm.add< libcasm_ir::IRDumpDotPass >();
-    pm.add< libcasm_ir::IRDumpSourcePass >();
-    // pm.add< libcasm_ir::BranchEliminationPass >();
-    // pm->add< libcasm_ir::ConstantFoldingPass >();
-
-    pm.setDefaultPass< libcasm_fe::NumericExecutionPass >();
+    // run pass pipeline
 
     if( not pm.run( flush ) )
     {
