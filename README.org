@@ -1,11 +1,11 @@
 # 
-#   Copyright (c) 2014-2017 CASM Organization
+#   Copyright (C) 2014-2018 CASM Organization <https://casm-lang.org>
 #   All rights reserved.
 # 
 #   Developed by: Philipp Paulweber
 #                 Emmanuel Pescosta
 #                 Florian Hahn
-#                 https://github.com/casm-lang/casmi
+#                 <https://github.com/casm-lang/casmi>
 # 
 #   This file is part of casmi.
 # 
@@ -36,20 +36,22 @@ This project is currently in a very early stage.
 
 ** Copyright and License
 
-The copyright holder of casmi is the CASM organization (@casm-lang) 
-and the used license of casmi is a [[https://www.gnu.org/licenses/gpl-3.0.html][GNU GPLv3+]].
+The copyright holder of 
+=casmi= is the [[https://casm-lang.org][CASM organization]] ([[https://github.com/casm-lang][@casm-lang]]) 
+and the used license of 
+=casmi= is the [[https://www.gnu.org/licenses/gpl-3.0.html][GNU GPLv3+]].
 
 *** Notice
 
 #+begin_src
 
-Copyright (c) 2014-2017 CASM Organization
+Copyright (C) 2014-2018 CASM Organization <https://casm-lang.org>
 All rights reserved.
 
-Developed by: Florian Hahn
-              Philipp Paulweber
+Developed by: Philipp Paulweber
               Emmanuel Pescosta
-              https://github.com/casm-lang/casmi
+              Florian Hahn
+              <https://github.com/casm-lang/casmi>
 
 This file is part of casmi.
 
