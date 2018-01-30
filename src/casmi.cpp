@@ -23,8 +23,7 @@
 //  along with casmi. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "License.h"
-#include "casmi/Version"
+#include <casmi/Version>
 
 #include <libcasm-fe/libcasm-fe>
 #include <libcasm-ir/libcasm-ir>
@@ -101,7 +100,7 @@ int main( int argc, const char* argv[] )
 
             log.output(
                 "\n" + DESCRIPTION + "\n" + log.source()->name() + ": version: " + casmi::REVTAG +
-                " [ " + __DATE__ + " " + __TIME__ + " ]\n" + "\n" + LICENSE );
+                " [ " + __DATE__ + " " + __TIME__ + " ]\n" + "\n" + casmi::NOTICE );
 
             return -1;
         } );

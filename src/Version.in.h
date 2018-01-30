@@ -39,6 +39,8 @@ namespace casmi
     constexpr const char* REVTAG = "@GIT_REVTAG@";
     constexpr const char* COMMIT = "@GIT_COMMIT@";
     constexpr const char* BRANCH = "@GIT_BRANCH@";
+    constexpr const char* LICENSE = "@GIT_LICENSE@";
+    constexpr const char* NOTICE = "@GIT_NOTICE@";
 }
 
 #endif  // _CASMI_VERSION_H_
