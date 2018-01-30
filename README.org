@@ -39,7 +39,7 @@ This project is currently in a very early stage.
 The copyright holder of 
 =casmi= is the [[https://casm-lang.org][CASM organization]] ([[https://github.com/casm-lang][@casm-lang]]) 
 and the used license of 
-=casmi= is the [[https://www.gnu.org/licenses/gpl-3.0.html][GNU GPLv3+]].
+=casmi= is the [[https://www.gnu.org/licenses/gpl-3.0.html][GNU GPLv3]].
 
 *** Notice
 
