@@ -58,7 +58,6 @@ int main( int argc, const char* argv[] )
     u1 flag_dump_updates = false;
 
     libstdhl::Args options( argc, argv, libstdhl::Args::DEFAULT, [&files, &log]( const char* arg ) {
-
         if( files.size() > 0 )
         {
             log.error(
@@ -87,7 +86,6 @@ int main( int argc, const char* argv[] )
         libstdhl::Args::NONE,
         "display usage and synopsis",
         [&log, &options]( const char* ) {
-
             log.output(
                 "\n" + DESCRIPTION + "\n" + log.source()->name() + ": usage: [options] <file>\n" +
                 "\n" + "options: \n" + options.usage() + "\n" );
@@ -97,7 +95,6 @@ int main( int argc, const char* argv[] )
 
     options.add(
         'v', "version", libstdhl::Args::NONE, "display version information", [&log]( const char* ) {
-
             log.output(
                 "\n" + DESCRIPTION + "\n" + log.source()->name() + ": version: " + casmi::REVTAG +
                 " [ " + __DATE__ + " " + __TIME__ + " ]\n" + "\n" + casmi::NOTICE );
@@ -111,7 +108,6 @@ int main( int argc, const char* argv[] )
         libstdhl::Args::NONE,
         "display the internal parser debug information",
         [&]( const char* option ) {
-
             ast_parse_debug = true;
             return 0;
         } );
@@ -122,7 +118,6 @@ int main( int argc, const char* argv[] )
         libstdhl::Args::NONE,
         "TBD DESCRIPTION dump updates (updateset)",
         [&flag_dump_updates]( const char* option ) {
-
             flag_dump_updates = true;
             return 0;
         } );
@@ -182,12 +177,10 @@ int main( int argc, const char* argv[] )
 
     pm.set< libcasm_fe::SourceToAstPass >( [&]( libcasm_fe::SourceToAstPass& pass ) {
         pass.setDebug( ast_parse_debug );
-
     } );
 
     pm.set< libcasm_fe::NumericExecutionPass >( [&]( libcasm_fe::NumericExecutionPass& pass ) {
         // pass.setDumpUpdates( flag_dump_updates );
-
     } );
 
     // run pass pipeline
