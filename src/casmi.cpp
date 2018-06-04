@@ -55,7 +55,7 @@ int main( int argc, const char* argv[] )
     };
 
     std::vector< std::string > files;
-    u1 flag_dump_updates = false;
+    // u1 flag_dump_updates = false;
 
     libstdhl::Args options( argc, argv, libstdhl::Args::DEFAULT, [&files, &log]( const char* arg ) {
         if( files.size() > 0 )
@@ -112,15 +112,15 @@ int main( int argc, const char* argv[] )
             return 0;
         } );
 
-    options.add(
-        'd',
-        "dump-updates",
-        libstdhl::Args::NONE,
-        "TBD DESCRIPTION dump updates (updateset)",
-        [&flag_dump_updates]( const char* option ) {
-            flag_dump_updates = true;
-            return 0;
-        } );
+    // options.add(
+    //     'd',
+    //     "dump-updates",
+    //     libstdhl::Args::NONE,
+    //     "TBD DESCRIPTION dump updates (updateset)",
+    //     [&flag_dump_updates]( const char* option ) {
+    //         flag_dump_updates = true;
+    //         return 0;
+    //     } );
 
     // add passes to the pass manager to setup command-line options
 
@@ -175,9 +175,8 @@ int main( int argc, const char* argv[] )
 
     // set pass-specific configurations
 
-    pm.set< libcasm_fe::SourceToAstPass >( [&]( libcasm_fe::SourceToAstPass& pass ) {
-        pass.setDebug( ast_parse_debug );
-    } );
+    pm.set< libcasm_fe::SourceToAstPass >(
+        [&]( libcasm_fe::SourceToAstPass& pass ) { pass.setDebug( ast_parse_debug ); } );
 
     pm.set< libcasm_fe::NumericExecutionPass >( [&]( libcasm_fe::NumericExecutionPass& pass ) {
         // pass.setDumpUpdates( flag_dump_updates );
