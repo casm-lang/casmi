@@ -1,18 +1,18 @@
 [submodule "lib/gtest"]
 	path = lib/gtest
-	url = https://github.com/google/googletest
+	url = https://github.com/casm-lang/libgtest
 	branch = master
 [submodule "lib/hayai"]
 	path = lib/hayai
-	url = https://github.com/nickbruun/hayai
+	url = https://github.com/casm-lang/libhayai
 	branch = master
 [submodule "lib/stdhl"]
 	path = lib/stdhl
-	url = git@github.com:ppaulweber/libstdhl
+	url = https://github.com/casm-lang/libstdhl
 	branch = master
 [submodule "lib/pass"]
 	path = lib/pass
-	url = git@github.com:ppaulweber/libpass
+	url = https://github.com/casm-lang/libpass
 	branch = master
 [submodule "lib/casm-ir"]
 	path = lib/casm-ir
