@@ -1,0 +1,146 @@
+#
+#   Copyright (C) 2014-2018 CASM Organization <https://casm-lang.org>
+#   All rights reserved.
+#
+#   Developed by: Philipp Paulweber
+#                 Emmanuel Pescosta
+#                 Florian Hahn
+#                 <https://github.com/casm-lang/casmi>
+#
+#   This file is part of casmi.
+#
+#   casmi is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   casmi is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with casmi. If not, see <http://www.gnu.org/licenses/>.
+#
+
+check_task:
+  container:
+    image: casmlang/container.linux
+    memory: 2
+    cpu: 1
+  env:
+    GITHUB_TOKEN: ENCRYPTED[TODO]
+  matrix:
+    env:
+      B: "debug"
+      C: "clang"
+  fetch_script:
+    - make ci-fetch
+  build_script:
+    - make ci-build
+  test_script:
+    - make ci-test
+  benchmark_script:
+    - make ci-benchmark
+
+coverage_task:
+  depends_on: check
+  container:
+    image: casmlang/container.linux
+    memory: 2
+    cpu: 1
+  env:
+    GITHUB_TOKEN: ENCRYPTED[TODO]
+  matrix:
+    env:
+      B: "coverage"
+      C: "gcc"
+      CODECOV_TOKEN: ENCRYPTED[TODO]
+  fetch_script:
+    - make ci-fetch
+  build_script:
+    - make ci-build
+  test_script:
+    - make ci-test
+  coverage_script:
+    - wget https://codecov.io/bash
+    - sh bash -f "!*#usr#include*" 2> /dev/null
+
+linux_task:
+  depends_on: check
+  container:
+    image: casmlang/container.linux
+    memory: 2
+    cpu: 1
+  env:
+    GITHUB_TOKEN: ENCRYPTED[TODO]
+  matrix:
+    env:
+      B: "release"
+      C: "clang"
+    env:
+      B: "release"
+      C: "gcc"
+  fetch_script:
+    - make ci-fetch
+  build_script:
+    - make ci-build
+  test_script:
+    - make ci-test
+  benchmark_script:
+    - make ci-benchmark
+
+darwin_task:
+  depends_on: check
+  osx_instance:
+    image: high-sierra-xcode-9.4.1
+  env:
+    GITHUB_TOKEN: ENCRYPTED[TODO]
+  matrix:
+    env:
+      B: "release"
+      C: "clang"
+    env:
+      B: "release"
+      C: "gcc"
+  setup_script:
+    - brew install cmake
+    - brew install gcc
+  fetch_script:
+    - make ci-fetch
+  build_script:
+    - make ci-build
+  test_script:
+    - make ci-test
+  benchmark_script:
+    - make ci-benchmark
+
+windows_task:
+  depends_on: check
+  windows_container:
+    image: casmlang/container.windows
+    os_version: 2016
+    cpu: 1
+  env:
+    GITHUB_TOKEN: ENCRYPTED[TODO]
+  matrix:
+    env:
+      V: mingw64
+      B: "release"
+      C: "clang"
+    env:
+      V: mingw64
+      B: "release"
+      C: "gcc"
+  fetch_script:
+    - set PATH=C:\msys2\%V%\bin;%PATH%
+    - make ci-fetch
+  build_script:
+    - set PATH=C:\msys2\%V%\bin;%PATH%
+    - make ci-build
+  test_script:
+    - set PATH=C:\msys2\%V%\bin;%PATH%
+    - make ci-test
+  benchmark_script:
+    - set PATH=C:\msys2\%V%\bin;%PATH%
+    - make ci-benchmark
