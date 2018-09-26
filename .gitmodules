@@ -45,20 +45,20 @@
 
 [submodule "lib/casm-ir"]
 	path = lib/casm-ir
-	url = https://github.com:casm-lang/libcasm-ir
+	url = https://github.com/casm-lang/libcasm-ir
 	branch = master
 
 [submodule "lib/casm-rt"]
 	path = lib/casm-rt
-	url = https://github.com:casm-lang/libcasm-rt
+	url = https://github.com/casm-lang/libcasm-rt
 	branch = master
 
 [submodule "lib/casm-fe"]
 	path = lib/casm-fe
-	url = https://github.com:casm-lang/libcasm-fe
+	url = https://github.com/casm-lang/libcasm-fe
 	branch = master
 
 [submodule "lib/casm-tc"]
 	path = lib/casm-tc
-	url = https://github.com:casm-lang/libcasm-tc
+	url = https://github.com/casm-lang/libcasm-tc
 	branch = master
