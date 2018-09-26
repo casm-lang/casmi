@@ -105,7 +105,9 @@ darwin_task:
       C: "gcc"
   setup_script:
     - brew install cmake
-    - brew install gcc
+    - if [ "$C" == "gcc" ]; then brew install gcc; fi
+    - brew install flex  && brew link --force flex
+    - brew install bison && brew link --force bison
   fetch_script:
     - make ci-fetch
   build_script:
