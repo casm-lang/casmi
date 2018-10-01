@@ -102,8 +102,13 @@ add_executable( ${PROJECT}
   $<TARGET_OBJECTS:${PROJECT}-cpp>
   )
 
+set( PROJECT_EXE_FLAGS "-static" )
+if( APPLE )
+  set( PROJECT_EXE_FLAGS "" )
+endif()
+
 if( ${LIBCASM_FE_FOUND} )
-  target_link_libraries( ${PROJECT} PUBLIC "-static"
+  target_link_libraries( ${PROJECT} PUBLIC ${PROJECT_EXE_FLAGS}
     ${LIBCASM_FE_LIBRARY}
     ${LIBCASM_RT_LIBRARY}
     ${LIBCASM_IR_LIBRARY}
