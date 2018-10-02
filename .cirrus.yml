@@ -44,8 +44,8 @@ linux_task:
     - make ci-build
   test_script:
     - make ci-test
-  benchmark_script:
-    - make ci-benchmark
+# benchmark_script:
+#   - make ci-benchmark
   coverage_script:
     - |
       if [ "$C" == "gcc" ]; then
@@ -76,8 +76,8 @@ darwin_task:
     - make ci-build
   test_script:
     - make ci-test
-  benchmark_script:
-    - make ci-benchmark
+# benchmark_script:
+#   - make ci-benchmark
 
 windows_task:
   windows_container:
@@ -104,6 +104,6 @@ windows_task:
   test_script:
     - set PATH=C:\msys2\%V%\bin;%PATH%
     - make ci-test
-  benchmark_script:
-    - set PATH=C:\msys2\%V%\bin;%PATH%
-    - make ci-benchmark
+# benchmark_script:
+#   - set PATH=C:\msys2\%V%\bin;%PATH%
+#   - make ci-benchmark
