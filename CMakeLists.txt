@@ -94,6 +94,18 @@ add_dependencies( ${PROJECT}-benchmark
   )
 
 
+set( PROJECT_EXE_FLAGS "-static" )
+if( APPLE )
+  set( PROJECT_EXE_FLAGS "" )
+endif()
+
+
+set( PROJECT_LD_FLAGS "-Wl,--whole-archive ${LIBCASM_TC_TEST} -Wl,--no-whole-archive" )
+if( APPLE )
+  set( PROJECT_LD_FLAGS "-Wl,-all_load ${LIBCASM_TC_TEST} -Wl,-noall_load" )
+endif()
+
+
 #
 # executable
 #
@@ -101,11 +113,6 @@ add_dependencies( ${PROJECT}-benchmark
 add_executable( ${PROJECT}
   $<TARGET_OBJECTS:${PROJECT}-cpp>
   )
-
-set( PROJECT_EXE_FLAGS "-static" )
-if( APPLE )
-  set( PROJECT_EXE_FLAGS "" )
-endif()
 
 if( ${LIBCASM_FE_FOUND} )
   target_link_libraries( ${PROJECT} PUBLIC ${PROJECT_EXE_FLAGS}
@@ -134,9 +141,7 @@ add_executable( ${PROJECT}-check
 
 if( ${LIBCASM_TC_FOUND} )
   target_link_libraries( ${PROJECT}-check
-    -Wl,--whole-archive
-    ${LIBCASM_TC_TEST}
-    -Wl,--no-whole-archive
+    ${PROJECT_LD_FLAGS}
     ${LIBPASS_LIBRARY}
     ${LIBSTDHL_LIBRARY}
     ${LIBGTEST_LIBRARY}
@@ -157,9 +162,7 @@ add_executable( ${PROJECT}-run
 
 if( ${LIBCASM_TC_FOUND} )
   target_link_libraries( ${PROJECT}-run
-    -Wl,--whole-archive
-    ${LIBCASM_TC_BENCHMARK}
-    -Wl,--no-whole-archive
+    ${PROJECT_LD_FLAGS}
     ${LIBPASS_LIBRARY}
     ${LIBSTDHL_LIBRARY}
     ${LIBHAYAI_LIBRARY}
