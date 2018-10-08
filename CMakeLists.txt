@@ -44,6 +44,13 @@ package_git_submodule( libcasm-fe master REQUIRED obj   ../../lib/casm-fe ../cas
 package_git_submodule( libcasm-tc master REQUIRED obj   ../../lib/casm-tc ../casm-tc lib/casm-tc )
 package_git_submodule( libgtest   master REQUIRED build ../../lib/gtest   ../gtest   lib/gtest   )
 package_git_submodule( libhayai   master REQUIRED build ../../lib/hayai   ../hayai   lib/hayai   )
+package_git_deps(
+  libstdhl>libpass
+  libpass>libcasm-ir
+  libcasm-ir>libcasm-rt
+  libcasm-rt>libcasm-fe
+  libstdhl>libcasm-tc
+  )
 
 find_package( Threads REQUIRED )
 
@@ -55,42 +62,6 @@ include( CPack )
 add_subdirectory( src )
 add_subdirectory( etc
   EXCLUDE_FROM_ALL
-  )
-
-add_custom_target( ${PROJECT}-sync
-  COMMAND
-    make sync > ${PROJECT_BINARY_DIR}/CMakeSync.txt 2>&1
-  DEPENDS
-    libstdhl
-    libpass
-    libcasm-ir
-    libcasm-rt
-    libcasm-fe
-  WORKING_DIRECTORY
-    ${PROJECT_SOURCE_DIR}
-  )
-
-add_dependencies( ${PROJECT}-cpp
-  ${PROJECT}-sync
-  )
-
-add_custom_target( ${PROJECT}-sync-other
-  COMMAND
-    make sync > ${PROJECT_BINARY_DIR}/CMakeSync.txt 2>&1
-  DEPENDS
-    libgtest
-    libhayai
-    libcasm-tc
-  WORKING_DIRECTORY
-    ${PROJECT_SOURCE_DIR}
-  )
-
-add_dependencies( ${PROJECT}-test
-  ${PROJECT}-sync-other
-  )
-
-add_dependencies( ${PROJECT}-benchmark
-  ${PROJECT}-sync-other
   )
 
 
