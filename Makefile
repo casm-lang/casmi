@@ -35,7 +35,12 @@ UPDATE_ROOT = ../../lib/stdhl
 
 include .cmake/config.mk
 
-ENV_FLAGS = CASM=$(OBJ)/$(TARGET) CASM_ARG_PRE=--ast-exec-num
+ENV_FLAGS = CASM_ARG_PRE=--ast-exec-num
+ifeq ($(ENV_OSYS),Windows)
+  ENV_FLAGS += CASM=$(OBJ)\\$(TARGET)
+else
+  ENV_FLAGS += CASM=$(OBJ)/$(TARGET)
+endif
 
 
 ci-fetch: ci-git-access
