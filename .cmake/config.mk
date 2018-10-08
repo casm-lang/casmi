@@ -727,6 +727,8 @@ ci-fetch: ci-info
 	@git submodule foreach \
 	'git branch --remotes | grep $(ENV_CI_BRANCH) && git checkout $(ENV_CI_BRANCH) || git checkout master; echo ""'
 	@make --no-print-directory info-repo
+
+ci-deps: ci-check
 	@make --no-print-directory C=$(C) $(B)-deps
 
 ci-build: ci-check
