@@ -49,6 +49,8 @@ package_git_deps(
   libpass>libcasm-ir
   libcasm-ir>libcasm-rt
   libcasm-rt>libcasm-fe
+  libgtest>libcasm-tc
+  libhayai>libcasm-tc
   libstdhl>libcasm-tc
   )
 
