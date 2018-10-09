@@ -45,13 +45,13 @@ package_git_submodule( libcasm-tc master REQUIRED obj   ../../lib/casm-tc ../cas
 package_git_submodule( libgtest   master REQUIRED build ../../lib/gtest   ../gtest   lib/gtest   )
 package_git_submodule( libhayai   master REQUIRED build ../../lib/hayai   ../hayai   lib/hayai   )
 package_git_deps(
+  libgtest>libstdhl
+  libhayai>libstdhl
   libstdhl>libpass
   libpass>libcasm-ir
   libcasm-ir>libcasm-rt
   libcasm-rt>libcasm-fe
-  libgtest>libcasm-tc
-  libhayai>libcasm-tc
-  libstdhl>libcasm-tc
+  libcasm-fe>libcasm-tc
   )
 
 find_package( Threads REQUIRED )
@@ -115,6 +115,7 @@ add_executable( ${PROJECT}-check
 if( ${LIBCASM_TC_FOUND} )
   target_link_libraries( ${PROJECT}-check
     ${PROJECT_LD_FLAGS}
+    ${LIBCASM_TC_LIBRARY}
     ${LIBPASS_LIBRARY}
     ${LIBSTDHL_LIBRARY}
     ${LIBGTEST_LIBRARY}
@@ -136,6 +137,7 @@ add_executable( ${PROJECT}-run
 if( ${LIBCASM_TC_FOUND} )
   target_link_libraries( ${PROJECT}-run
     ${PROJECT_LD_FLAGS}
+    ${LIBCASM_TC_LIBRARY}
     ${LIBPASS_LIBRARY}
     ${LIBSTDHL_LIBRARY}
     ${LIBHAYAI_LIBRARY}
