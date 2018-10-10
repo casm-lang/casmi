@@ -73,12 +73,6 @@ if( APPLE )
 endif()
 
 
-set( PROJECT_LD_FLAGS "-Wl,--whole-archive ${LIBCASM_TC_TEST} -Wl,--no-whole-archive" )
-if( APPLE )
-  set( PROJECT_LD_FLAGS "-Wl,-all_load ${LIBCASM_TC_TEST} -Wl,-noall_load" )
-endif()
-
-
 #
 # executable
 #
@@ -112,10 +106,14 @@ add_executable( ${PROJECT}-check
   $<TARGET_OBJECTS:${PROJECT}-test>
   )
 
+set( PROJECT_LD_TEST "-Wl,--whole-archive ${LIBCASM_TC_TEST} -Wl,--no-whole-archive" )
+if( APPLE )
+  set( PROJECT_LD_TEST "-Wl,-force_load ${LIBCASM_TC_TEST}" )
+endif()
+
 if( ${LIBCASM_TC_FOUND} )
   target_link_libraries( ${PROJECT}-check
-    ${PROJECT_LD_FLAGS}
-    ${LIBCASM_TC_LIBRARY}
+    ${PROJECT_LD_TEST}
     ${LIBPASS_LIBRARY}
     ${LIBSTDHL_LIBRARY}
     ${LIBGTEST_LIBRARY}
@@ -134,10 +132,14 @@ add_executable( ${PROJECT}-run
   $<TARGET_OBJECTS:${PROJECT}-benchmark>
   )
 
+set( PROJECT_LD_BENCHMARK "-Wl,--whole-archive ${LIBCASM_TC_BENCHMARK} -Wl,--no-whole-archive" )
+if( APPLE )
+  set( PROJECT_LD_BENCHMARK "-Wl,-force_load ${LIBCASM_TC_BENCHMARK}" )
+endif()
+
 if( ${LIBCASM_TC_FOUND} )
   target_link_libraries( ${PROJECT}-run
-    ${PROJECT_LD_FLAGS}
-    ${LIBCASM_TC_LIBRARY}
+    ${PROJECT_LD_BENCHMARK}
     ${LIBPASS_LIBRARY}
     ${LIBSTDHL_LIBRARY}
     ${LIBHAYAI_LIBRARY}
