@@ -46,8 +46,8 @@ linux_task:
     - make ci-build
   test_script:
     - make ci-test
-# benchmark_script:
-#   - make ci-benchmark
+  benchmark_script:
+    - if [ "$B" == "release" ]; then make ci-benchmark; fi
   coverage_script:
     - |
       if [ "$C" == "gcc" ]; then
@@ -80,8 +80,8 @@ darwin_task:
     - make ci-build
   test_script:
     - make ci-test
-# benchmark_script:
-#   - make ci-benchmark
+  benchmark_script:
+    - if [ "$B" == "release" ]; then make ci-benchmark; fi
 
 windows_task:
   windows_container:
@@ -111,6 +111,6 @@ windows_task:
   test_script:
     - set PATH=C:\msys2\%V%\bin;%PATH%
     - make ci-test
-# benchmark_script:
-#   - set PATH=C:\msys2\%V%\bin;%PATH%
-#   - make ci-benchmark
+  benchmark_script:
+    - set PATH=C:\msys2\%V%\bin;%PATH%
+    - if "%B%"=="release" ( make ci-benchmark )
