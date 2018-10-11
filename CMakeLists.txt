@@ -27,10 +27,10 @@ set( PROJECT casmi )
 
 cmake_minimum_required( VERSION ${CMAKE_VERSION} )
 
-project( ${PROJECT} LANGUAGES C CXX )
+project( ${PROJECT} LANGUAGES CXX )
 set( CMAKE_CXX_STANDARD 14 )
+set( CMAKE_CXX_EXTENSIONS OFF )
 set( CMAKE_VERSION 3.2 )
-set( CMAKE_INCLUDE_CURRENT_DIR ON )
 set( CMAKE_MODULE_PATH ${${PROJECT}_SOURCE_DIR}/.cmake )
 
 include( LibPackage )
@@ -44,6 +44,15 @@ package_git_submodule( libcasm-fe master REQUIRED obj   ../../lib/casm-fe ../cas
 package_git_submodule( libcasm-tc master REQUIRED obj   ../../lib/casm-tc ../casm-tc lib/casm-tc )
 package_git_submodule( libgtest   master REQUIRED build ../../lib/gtest   ../gtest   lib/gtest   )
 package_git_submodule( libhayai   master REQUIRED build ../../lib/hayai   ../hayai   lib/hayai   )
+package_git_deps(
+  libgtest>libstdhl
+  libhayai>libstdhl
+  libstdhl>libpass
+  libpass>libcasm-ir
+  libcasm-ir>libcasm-rt
+  libcasm-rt>libcasm-fe
+  libcasm-fe>libcasm-tc
+  )
 
 find_package( Threads REQUIRED )
 
@@ -57,41 +66,11 @@ add_subdirectory( etc
   EXCLUDE_FROM_ALL
   )
 
-add_custom_target( ${PROJECT}-sync
-  COMMAND
-    make sync > ${PROJECT_BINARY_DIR}/CMakeSync 2>&1
-  DEPENDS
-    libstdhl
-    libpass
-    libcasm-ir
-    libcasm-rt
-    libcasm-fe
-  WORKING_DIRECTORY
-    ${PROJECT_SOURCE_DIR}
-  )
 
-add_dependencies( ${PROJECT}-cpp
-  ${PROJECT}-sync
-  )
-
-add_custom_target( ${PROJECT}-sync-other
-  COMMAND
-    make sync > ${PROJECT_BINARY_DIR}/CMakeSync 2>&1
-  DEPENDS
-    libgtest
-    libhayai
-    libcasm-tc
-  WORKING_DIRECTORY
-    ${PROJECT_SOURCE_DIR}
-  )
-
-add_dependencies( ${PROJECT}-test
-  ${PROJECT}-sync-other
-  )
-
-add_dependencies( ${PROJECT}-benchmark
-  ${PROJECT}-sync-other
-  )
+set( PROJECT_EXE_FLAGS "-static" )
+if( APPLE )
+  set( PROJECT_EXE_FLAGS "" )
+endif()
 
 
 #
@@ -103,7 +82,7 @@ add_executable( ${PROJECT}
   )
 
 if( ${LIBCASM_FE_FOUND} )
-  target_link_libraries( ${PROJECT} PUBLIC "-static"
+  target_link_libraries( ${PROJECT} PUBLIC ${PROJECT_EXE_FLAGS}
     ${LIBCASM_FE_LIBRARY}
     ${LIBCASM_RT_LIBRARY}
     ${LIBCASM_IR_LIBRARY}
@@ -127,11 +106,14 @@ add_executable( ${PROJECT}-check
   $<TARGET_OBJECTS:${PROJECT}-test>
   )
 
+set( PROJECT_LD_TEST "-Wl,--whole-archive ${LIBCASM_TC_TEST} -Wl,--no-whole-archive" )
+if( APPLE )
+  set( PROJECT_LD_TEST "-Wl,-force_load ${LIBCASM_TC_TEST}" )
+endif()
+
 if( ${LIBCASM_TC_FOUND} )
   target_link_libraries( ${PROJECT}-check
-    -Wl,--whole-archive
-    ${LIBCASM_TC_TEST}
-    -Wl,--no-whole-archive
+    ${PROJECT_LD_TEST}
     ${LIBPASS_LIBRARY}
     ${LIBSTDHL_LIBRARY}
     ${LIBGTEST_LIBRARY}
@@ -150,11 +132,14 @@ add_executable( ${PROJECT}-run
   $<TARGET_OBJECTS:${PROJECT}-benchmark>
   )
 
+set( PROJECT_LD_BENCHMARK "-Wl,--whole-archive ${LIBCASM_TC_BENCHMARK} -Wl,--no-whole-archive" )
+if( APPLE )
+  set( PROJECT_LD_BENCHMARK "-Wl,-force_load ${LIBCASM_TC_BENCHMARK}" )
+endif()
+
 if( ${LIBCASM_TC_FOUND} )
   target_link_libraries( ${PROJECT}-run
-    -Wl,--whole-archive
-    ${LIBCASM_TC_BENCHMARK}
-    -Wl,--no-whole-archive
+    ${PROJECT_LD_BENCHMARK}
     ${LIBPASS_LIBRARY}
     ${LIBSTDHL_LIBRARY}
     ${LIBHAYAI_LIBRARY}

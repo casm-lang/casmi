@@ -24,14 +24,22 @@
 # 
 [[https://github.com/casm-lang/casm-lang.logo/raw/master/etc/headline.png]]
 
-* casmi
+#+options: toc:nil
+
+
+* casmi: CASM Numeric and Symbolic Interpreter
+
+[[https://gitter.im/casm-lang/casmi][https://badges.gitter.im/casm-lang/casmi.png]]
+[[https://ci.casm-lang.org/teams/main/pipelines/development/jobs/casmi-master][ @@html:<img src="https://ci.casm-lang.org/api/v1/teams/main/pipelines/development/jobs/casmi-master/badge">@@ ]]
+[[https://cirrus-ci.com/github/casm-lang/casmi][https://api.cirrus-ci.com/github/casm-lang/casmi.svg]]
+[[https://codecov.io/gh/casm-lang/casmi][https://codecov.io/gh/casm-lang/casmi/badge.svg]]
+[[https://github.com/casm-lang/casmi/tags][https://img.shields.io/github/tag/casm-lang/casmi.svg]]
+[[https://github.com/casm-lang/casmi/blob/master/LICENSE.txt][https://img.shields.io/badge/license-GPLv3%2BLE-blue.svg]]
 
 This project contains an interpreter for a concrete implementation of the Abstract
 State Machine (ASM) language CASM.
 
-** Status
-
-This project is currently in a very early stage.
+TBD
 
 
 ** Copyright and License

@@ -1,32 +1,64 @@
+#
+#   Copyright (C) 2014-2018 CASM Organization <https://casm-lang.org>
+#   All rights reserved.
+#
+#   Developed by: Philipp Paulweber
+#                 Emmanuel Pescosta
+#                 Florian Hahn
+#                 <https://github.com/casm-lang/casmi>
+#
+#   This file is part of casmi.
+#
+#   casmi is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   casmi is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with casmi. If not, see <http://www.gnu.org/licenses/>.
+#
+
 [submodule "lib/gtest"]
 	path = lib/gtest
 	url = https://github.com/casm-lang/libgtest
 	branch = master
+
 [submodule "lib/hayai"]
 	path = lib/hayai
 	url = https://github.com/casm-lang/libhayai
 	branch = master
+
 [submodule "lib/stdhl"]
 	path = lib/stdhl
 	url = https://github.com/casm-lang/libstdhl
 	branch = master
+
 [submodule "lib/pass"]
 	path = lib/pass
 	url = https://github.com/casm-lang/libpass
 	branch = master
+
 [submodule "lib/casm-ir"]
 	path = lib/casm-ir
-	url = git@github.com:casm-lang/libcasm-ir
+	url = https://github.com/casm-lang/libcasm-ir
 	branch = master
+
 [submodule "lib/casm-rt"]
 	path = lib/casm-rt
-	url = git@github.com:casm-lang/libcasm-rt
+	url = https://github.com/casm-lang/libcasm-rt
 	branch = master
+
 [submodule "lib/casm-fe"]
 	path = lib/casm-fe
-	url = git@github.com:casm-lang/libcasm-fe
+	url = https://github.com/casm-lang/libcasm-fe
 	branch = master
+
 [submodule "lib/casm-tc"]
 	path = lib/casm-tc
-	url = git@github.com:casm-lang/libcasm-tc
+	url = https://github.com/casm-lang/libcasm-tc
 	branch = master
