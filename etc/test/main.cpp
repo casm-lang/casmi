@@ -25,15 +25,21 @@
 
 #include "main.h"
 
+#include <casmi/Version>
+
 void casmi_main_dummy( void )
 {
     const auto source = libstdhl::Memory::make< libstdhl::Log::Source >( "casmi", "CASMI" );
-
     libstdhl::Log::defaultSource( source );
 }
 
 TEST( casmi_main, empty )
 {
+    std::cout << casmi::REVTAG << "\n";
+    std::cout << casmi::COMMIT << "\n";
+    std::cout << casmi::BRANCH << "\n";
+    std::cout << casmi::LICENSE << "\n";
+    std::cout << casmi::NOTICE << "\n";
 }
 
 //
