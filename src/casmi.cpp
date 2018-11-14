@@ -36,9 +36,6 @@
     TODO
 */
 
-static const std::string DESCRIPTION = "Corinthian Abstract State Machine (CASM) Interpreter\n";
-static const std::string PROFILE = "casmi";
-
 int main( int argc, const char* argv[] )
 {
     assert( argc > 0 );
@@ -46,7 +43,8 @@ int main( int argc, const char* argv[] )
 
     libpass::PassManager pm;
     libstdhl::Logger log( pm.stream() );
-    log.setSource( libstdhl::Memory::make< libstdhl::Log::Source >( app_name, DESCRIPTION ) );
+    log.setSource(
+        libstdhl::Memory::make< libstdhl::Log::Source >( app_name, casmi::DESCRIPTION ) );
 
     auto flush = [&pm, &app_name]() {
         libstdhl::Log::ApplicationFormatter f( app_name );
@@ -76,7 +74,7 @@ int main( int argc, const char* argv[] )
         libstdhl::Args::NONE,
         "display the unique test profile identifier",
         []( const char* ) {
-            std::cout << PROFILE << "\n";
+            std::cout << casmi::PROFILE << "\n";
             return -1;
         } );
 
@@ -87,8 +85,8 @@ int main( int argc, const char* argv[] )
         "display usage and synopsis",
         [&log, &options]( const char* ) {
             log.output(
-                "\n" + DESCRIPTION + "\n" + log.source()->name() + ": usage: [options] <file>\n" +
-                "\n" + "options: \n" + options.usage() + "\n" );
+                "\n" + casmi::DESCRIPTION + "\n" + log.source()->name() +
+                ": usage: [options] <file>\n" + "\n" + "options: \n" + options.usage() + "\n" );
 
             return -1;
         } );
@@ -96,8 +94,8 @@ int main( int argc, const char* argv[] )
     options.add(
         'v', "version", libstdhl::Args::NONE, "display version information", [&log]( const char* ) {
             log.output(
-                "\n" + DESCRIPTION + "\n" + log.source()->name() + ": version: " + casmi::REVTAG +
-                " [ " + __DATE__ + " " + __TIME__ + " ]\n" + "\n" + casmi::NOTICE );
+                "\n" + casmi::DESCRIPTION + "\n" + log.source()->name() + ": version: " +
+                casmi::REVTAG + " [ " + __DATE__ + " " + __TIME__ + " ]\n" + "\n" + casmi::NOTICE );
 
             return -1;
         } );
