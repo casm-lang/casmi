@@ -53,6 +53,7 @@ int main( int argc, const char* argv[] )
     };
 
     std::vector< std::string > files;
+    std::vector< std::string > outputPath;
     // u1 flag_dump_updates = false;
 
     libstdhl::Args options( argc, argv, libstdhl::Args::DEFAULT, [&files, &log]( const char* arg ) {
@@ -100,6 +101,23 @@ int main( int argc, const char* argv[] )
             return -1;
         } );
 
+    options.add(
+        'o',
+        "output",
+        libstdhl::Args::REQUIRED,
+        "define an output <path>",
+        [&log, &outputPath]( const char* arg ) {
+            if( outputPath.size() > 0 )
+            {
+                log.error( "too many output paths defined" );
+                return 1;
+            }
+
+            outputPath.emplace_back( arg );
+            return 0;
+        },
+        "path" );
+
     u1 ast_parse_debug = false;
     options.add(
         "ast-parse-debug",
@@ -123,6 +141,7 @@ int main( int argc, const char* argv[] )
     // add passes to the pass manager to setup command-line options
 
     pm.add< libcasm_fe::AstDumpDotPass >();
+    pm.add< libcasm_fe::AstDumpSourcePass >();
     pm.add< libcasm_fe::NumericExecutionPass >();
 
     for( auto id : pm.passes() )
@@ -178,6 +197,13 @@ int main( int argc, const char* argv[] )
 
     pm.set< libcasm_fe::NumericExecutionPass >( [&]( libcasm_fe::NumericExecutionPass& pass ) {
         // pass.setDumpUpdates( flag_dump_updates );
+    } );
+
+    pm.set< libcasm_fe::AstDumpDotPass >( [&]( libcasm_fe::AstDumpDotPass& pass ) {
+        if( outputPath.size() != 0 )
+        {
+            pass.setOutputPath( outputPath.front() );
+        }
     } );
 
     // run pass pipeline
