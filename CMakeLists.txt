@@ -39,7 +39,6 @@ package_git( ${PROJECT} )
 package_git_submodule( libstdhl   master REQUIRED obj   ../../lib/stdhl   ../stdhl   lib/stdhl   )
 package_git_submodule( libpass    master REQUIRED obj   ../../lib/pass    ../pass    lib/pass    )
 package_git_submodule( libcasm-ir master REQUIRED obj   ../../lib/casm-ir ../casm-ir lib/casm-ir )
-package_git_submodule( libcasm-rt master REQUIRED obj   ../../lib/casm-rt ../casm-rt lib/casm-rt )
 package_git_submodule( libcasm-fe master REQUIRED obj   ../../lib/casm-fe ../casm-fe lib/casm-fe )
 package_git_submodule( libcasm-tc master REQUIRED obj   ../../lib/casm-tc ../casm-tc lib/casm-tc )
 package_git_submodule( libgtest   master REQUIRED build ../../lib/gtest   ../gtest   lib/gtest   )
@@ -49,8 +48,7 @@ package_git_deps(
   libhayai>libstdhl
   libstdhl>libpass
   libpass>libcasm-ir
-  libcasm-ir>libcasm-rt
-  libcasm-rt>libcasm-fe
+  libcasm-ir>libcasm-fe
   libcasm-fe>libcasm-tc
   )
 
@@ -83,7 +81,6 @@ endif()
 if( ${LIBCASM_FE_FOUND} )
   target_link_libraries( ${PROJECT} PUBLIC ${PROJECT_EXE_FLAGS}
     ${LIBCASM_FE_LIBRARY}
-    ${LIBCASM_RT_LIBRARY}
     ${LIBCASM_IR_LIBRARY}
     ${LIBPASS_LIBRARY}
     ${LIBSTDHL_LIBRARY}
