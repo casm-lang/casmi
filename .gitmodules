@@ -48,11 +48,6 @@
 	url = https://github.com/casm-lang/libcasm-ir
 	branch = master
 
-[submodule "lib/casm-rt"]
-	path = lib/casm-rt
-	url = https://github.com/casm-lang/libcasm-rt
-	branch = master
-
 [submodule "lib/casm-fe"]
 	path = lib/casm-fe
 	url = https://github.com/casm-lang/libcasm-fe
