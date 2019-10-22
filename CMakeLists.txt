@@ -38,16 +38,19 @@ include( LibPackage )
 package_git( ${PROJECT} )
 package_git_submodule( libstdhl   master REQUIRED obj   ../../lib/stdhl   ../stdhl   lib/stdhl   )
 package_git_submodule( libpass    master REQUIRED obj   ../../lib/pass    ../pass    lib/pass    )
+package_git_submodule( libtptp    master REQUIRED obj   ../../lib/tptp    ../tptp    lib/tptp    )
 package_git_submodule( libcasm-ir master REQUIRED obj   ../../lib/casm-ir ../casm-ir lib/casm-ir )
 package_git_submodule( libcasm-fe master REQUIRED obj   ../../lib/casm-fe ../casm-fe lib/casm-fe )
 package_git_submodule( libcasm-tc master REQUIRED obj   ../../lib/casm-tc ../casm-tc lib/casm-tc )
 package_git_submodule( libgtest   master REQUIRED build ../../lib/gtest   ../gtest   lib/gtest   )
 package_git_submodule( libhayai   master REQUIRED build ../../lib/hayai   ../hayai   lib/hayai   )
+package_git_submodule( libz3      master REQUIRED build ../../lib/z3      ../z3      lib/z3      )
 package_git_deps(
   libgtest>libstdhl
   libhayai>libstdhl
   libstdhl>libpass
-  libpass>libcasm-ir
+  libpass>libtptp
+  libtptp>libcasm-ir
   libcasm-ir>libcasm-fe
   libcasm-fe>libcasm-tc
   )
