@@ -76,25 +76,28 @@ add_executable( ${PROJECT}
   $<TARGET_OBJECTS:${PROJECT}-cpp>
   )
 
-set( PROJECT_EXE_FLAGS "-static" )
+if( CMAKE_BUILD_TYPE EQUAL "RELEASE" )
+  set( PROJECT_EXE_FLAGS "-static" )
+endif()
+
 if( APPLE )
   set( PROJECT_EXE_FLAGS "" )
 endif()
 
 if( ${LIBCASM_FE_FOUND}
 AND ${LIBCASM_IR_FOUND}
+AND ${LIBZ3_FOUND}
 AND ${LIBTPTP_FOUND}
 AND ${LIBPASS_FOUND}
 AND ${LIBSTDHL_FOUND}
-AND ${LIBZ3_FOUND}
 )
   target_link_libraries( ${PROJECT} PUBLIC ${PROJECT_EXE_FLAGS}
     ${LIBCASM_FE_LIBRARY}
     ${LIBCASM_IR_LIBRARY}
+    ${LIBZ3_LIBRARY}
     ${LIBTPTP_LIBRARY}
     ${LIBPASS_LIBRARY}
     ${LIBSTDHL_LIBRARY}
-    ${LIBZ3_LIBRARY}
     Threads::Threads
     )
 endif()
