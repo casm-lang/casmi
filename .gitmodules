@@ -23,20 +23,6 @@
 #   along with casmi. If not, see <http://www.gnu.org/licenses/>.
 #
 
-[submodule "lib/gtest"]
-	path = lib/gtest
-	url = https://github.com/casm-lang/libgtest
-	branch = master
-
-[submodule "lib/hayai"]
-	path = lib/hayai
-	url = https://github.com/casm-lang/libhayai
-	branch = master
-
-[submodule "lib/z3"]
-	path = lib/z3
-	url = https://github.com/casm-lang/libz3
-
 [submodule "lib/stdhl"]
 	path = lib/stdhl
 	url = https://github.com/casm-lang/libstdhl
@@ -65,3 +51,17 @@
 	path = lib/casm-tc
 	url = https://github.com/casm-lang/libcasm-tc
 	branch = master
+
+[submodule "lib/gtest"]
+	path = lib/gtest
+	url = https://github.com/casm-lang/libgtest
+	branch = master
+
+[submodule "lib/hayai"]
+	path = lib/hayai
+	url = https://github.com/casm-lang/libhayai
+	branch = master
+
+[submodule "lib/z3"] # external
+	path = lib/z3
+	url = https://github.com/casm-lang/libz3
