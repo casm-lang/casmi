@@ -41,11 +41,3 @@ ifeq ($(ENV_OSYS),Windows)
 else
   ENV_FLAGS += CASM=$(OBJ)/$(TARGET)
 endif
-
-
-ci-fetch: ci-git-access
-
-ci-git-access:
-	@echo "-- Git Access Configuration"
-	@git config --global \
-	url."https://$(GITHUB_TOKEN)@github.com/".insteadOf "https://github.com/"
