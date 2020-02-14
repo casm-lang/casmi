@@ -67,7 +67,7 @@ add_subdirectory( etc
   EXCLUDE_FROM_ALL
   )
 
-
+#
 #
 # executable
 #
@@ -84,29 +84,29 @@ if( APPLE )
   set( PROJECT_EXE_FLAGS "" )
 endif()
 
-if( ${LIBCASM_FE_FOUND}
-AND ${LIBCASM_IR_FOUND}
-AND ${LIBZ3_FOUND}
-AND ${LIBTPTP_FOUND}
-AND ${LIBPASS_FOUND}
-AND ${LIBSTDHL_FOUND}
-)
+if( ${LIBCASM_FE_FOUND} )
   target_link_libraries( ${PROJECT} PUBLIC ${PROJECT_EXE_FLAGS}
-    ${LIBCASM_FE_LIBRARY}
-    ${LIBCASM_IR_LIBRARY}
-    ${LIBZ3_LIBRARY}
-    ${LIBTPTP_LIBRARY}
-    ${LIBPASS_LIBRARY}
-    ${LIBSTDHL_LIBRARY}
+    ${LIBCASM_FE_ARCHIVE}
+    ${LIBCASM_IR_ARCHIVE}
+    ${LIBTPTP_ARCHIVE}
+    ${LIBPASS_ARCHIVE}
+    ${LIBSTDHL_ARCHIVE}
+    ${LIBZ3_ARCHIVE}
     Threads::Threads
     )
+
+  if( WIN32 )
+    target_link_libraries( ${PROJECT} PUBLIC
+      ws2_32
+      )
+  endif()
 endif()
 
 set( ${PROJECT}_VERSION ${GIT_REVTAG} )
 set_property( TARGET ${PROJECT} PROPERTY VERSION ${${PROJECT}_VERSION} )
 set_property( TARGET ${PROJECT} PROPERTY PREFIX  "" )
 
-
+#
 #
 # test
 #
@@ -132,7 +132,7 @@ if( ${LIBCASM_TC_FOUND} )
     )
 endif()
 
-
+#
 #
 # benchmark
 #
@@ -158,7 +158,7 @@ if( ${LIBCASM_TC_FOUND} )
     )
 endif()
 
-
+#
 #
 # install
 #
@@ -172,7 +172,7 @@ install(
   INCLUDES DESTINATION include
   )
 
-
+# #
 # #
 # # cmake
 # #
@@ -184,7 +184,7 @@ install(
 #     "share/cmake/Module/${PROJECT}"
 #   )
 
-
+#
 #
 # build features and checks
 #
