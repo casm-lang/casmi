@@ -121,16 +121,14 @@ if( APPLE )
   set( PROJECT_LD_TEST "-Wl,-force_load ${LIBCASM_TC_TEST}" )
 endif()
 
-if( ${LIBCASM_TC_FOUND} )
-  target_link_libraries( ${PROJECT}-check
-    ${PROJECT_LD_TEST}
-    ${LIBPASS_LIBRARY}
-    ${LIBSTDHL_LIBRARY}
-    ${LIBGTEST_LIBRARY}
-    ${LIBGTEST_MAIN}
-    Threads::Threads
-    )
-endif()
+target_link_libraries( ${PROJECT}-check
+  ${PROJECT_LD_TEST}
+  ${LIBPASS_ARCHIVE}
+  ${LIBSTDHL_ARCHIVE}
+  ${LIBGTEST_LIBRARY}
+  ${LIBGTEST_MAIN}
+  Threads::Threads
+  )
 
 #
 #
@@ -147,16 +145,14 @@ if( APPLE )
   set( PROJECT_LD_BENCHMARK "-Wl,-force_load ${LIBCASM_TC_BENCHMARK}" )
 endif()
 
-if( ${LIBCASM_TC_FOUND} )
-  target_link_libraries( ${PROJECT}-run
-    ${PROJECT_LD_BENCHMARK}
-    ${LIBPASS_LIBRARY}
-    ${LIBSTDHL_LIBRARY}
-    ${LIBHAYAI_LIBRARY}
-    ${LIBGTEST_LIBRARY}
-    Threads::Threads
-    )
-endif()
+target_link_libraries( ${PROJECT}-run
+  ${PROJECT_LD_BENCHMARK}
+  ${LIBPASS_ARCHIVE}
+  ${LIBSTDHL_ARCHIVE}
+  ${LIBHAYAI_LIBRARY}
+  ${LIBGTEST_LIBRARY}
+  Threads::Threads
+  )
 
 #
 #
