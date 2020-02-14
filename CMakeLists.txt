@@ -121,7 +121,7 @@ if( APPLE )
   set( PROJECT_LD_TEST "-Wl,-force_load ${LIBCASM_TC_TEST}" )
 endif()
 
-if( ${LIBPASS_FOUND} )
+if( ${LIBCASM_TC_FOUND} )
   target_link_libraries( ${PROJECT}-check
     ${PROJECT_LD_TEST}
     ${LIBPASS_ARCHIVE}
@@ -147,7 +147,7 @@ if( APPLE )
   set( PROJECT_LD_BENCHMARK "-Wl,-force_load ${LIBCASM_TC_BENCHMARK}" )
 endif()
 
-if( ${LIBPASS_FOUND} )
+if( ${LIBCASM_TC_FOUND} )
   target_link_libraries( ${PROJECT}-run
     ${PROJECT_LD_BENCHMARK}
     ${LIBPASS_ARCHIVE}
