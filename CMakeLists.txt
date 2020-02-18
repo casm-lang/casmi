@@ -98,6 +98,7 @@ if( ${LIBCASM_FE_FOUND} )
   if( WIN32 )
     target_link_libraries( ${PROJECT} PUBLIC
       ws2_32
+      gomp
       )
   endif()
 endif()
