@@ -49,6 +49,7 @@ package_git_deps(
   libhayai>libstdhl
   libstdhl>libpass
   libpass>libtptp
+  libz3>libtptp
   libtptp>libcasm-ir
   libcasm-ir>libcasm-fe
   libcasm-fe>libcasm-tc
