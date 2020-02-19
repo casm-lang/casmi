@@ -31,9 +31,17 @@ FORMAT += etc
 FORMAT += etc/*
 FORMAT += etc/*/*
 
-UPDATE_ROOT = ../../lib/stdhl
+CONFIG  = ../../lib/stdhl
+ifeq ($(wildcard $(CONFIG)/.cmake/.*),)
+  CONFIG = lib/stdhl
+  ifeq ($(wildcard $(CONFIG)/.cmake/.*),)
+    $(shell git submodule update --init $(CONFIG) && git -C $(CONFIG) checkout master)
+  endif
+endif
 
-include .cmake/config.mk
+INCLUDE = $(CONFIG)/.cmake/config.mk
+include $(INCLUDE)
+
 
 ENV_FLAGS  = $(ENV_SET) CASM_ARG_PRE=--ast-exec &&
 ENV_FLAGS += $(ENV_SET) CASM="$(OBJ)/$(TARGET)" &&
