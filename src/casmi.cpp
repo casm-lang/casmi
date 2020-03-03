@@ -46,7 +46,7 @@ int main( int argc, const char* argv[] )
     log.setSource(
         libstdhl::Memory::make< libstdhl::Log::Source >( app_name, casmi::DESCRIPTION ) );
 
-    auto flush = [&pm, &app_name]() {
+    auto flush = [ &pm, &app_name ]() {
         libstdhl::Log::ApplicationFormatter f( app_name );
         libstdhl::Log::OutputStreamSink c( std::cerr, f );
         pm.stream().flush( c );
@@ -56,18 +56,19 @@ int main( int argc, const char* argv[] )
     std::vector< std::string > outputPath;
     // u1 flag_dump_updates = false;
 
-    libstdhl::Args options( argc, argv, libstdhl::Args::DEFAULT, [&files, &log]( const char* arg ) {
-        if( files.size() > 0 )
-        {
-            log.error(
-                "too many files, input file '" + files.front() +
-                "' cannot be combined with file '" + arg + "'" );
-            return 1;
-        }
+    libstdhl::Args options(
+        argc, argv, libstdhl::Args::DEFAULT, [ &files, &log ]( const char* arg ) {
+            if( files.size() > 0 )
+            {
+                log.error(
+                    "too many files, input file '" + files.front() +
+                    "' cannot be combined with file '" + arg + "'" );
+                return 1;
+            }
 
-        files.emplace_back( arg );
-        return 0;
-    } );
+            files.emplace_back( arg );
+            return 0;
+        } );
 
     options.add(
         't',
@@ -84,7 +85,7 @@ int main( int argc, const char* argv[] )
         "help",
         libstdhl::Args::NONE,
         "display usage and synopsis",
-        [&log, &options]( const char* ) {
+        [ &log, &options ]( const char* ) {
             log.output(
                 "\n" + casmi::DESCRIPTION + "\n" + log.source()->name() +
                 ": usage: [options] <file>\n" + "\n" + "options: \n" + options.usage() + "\n" );
@@ -93,7 +94,11 @@ int main( int argc, const char* argv[] )
         } );
 
     options.add(
-        'v', "version", libstdhl::Args::NONE, "display version information", [&log]( const char* ) {
+        'v',
+        "version",
+        libstdhl::Args::NONE,
+        "display version information",
+        [ &log ]( const char* ) {
             log.output(
                 "\n" + casmi::DESCRIPTION + "\n" + log.source()->name() + ": version: " +
                 casmi::REVTAG + " [ " + __DATE__ + " " + __TIME__ + " ]\n" + "\n" + casmi::NOTICE );
@@ -106,7 +111,7 @@ int main( int argc, const char* argv[] )
         "output",
         libstdhl::Args::REQUIRED,
         "define an output <path>",
-        [&log, &outputPath]( const char* arg ) {
+        [ &log, &outputPath ]( const char* arg ) {
             if( outputPath.size() > 0 )
             {
                 log.error( "too many output paths defined" );
@@ -118,13 +123,13 @@ int main( int argc, const char* argv[] )
         },
         "path" );
 
-    u1 ast_parse_debug = false;
+    u1 parse_debug = false;
     options.add(
-        "ast-parse-debug",
+        "grammar-debug",
         libstdhl::Args::NONE,
-        "display the internal parser debug information",
-        [&]( const char* option ) {
-            ast_parse_debug = true;
+        "display the internal grammar debug information",
+        [ & ]( const char* option ) {
+            parse_debug = true;
             return 0;
         } );
 
@@ -140,8 +145,10 @@ int main( int argc, const char* argv[] )
 
     // add passes to the pass manager to setup command-line options
 
-    pm.add< libcasm_fe::AstDumpDotPass >();
-    pm.add< libcasm_fe::AstDumpSourcePass >();
+    pm.add< libcasm_fe::CstDumpPass >();
+    pm.add< libcasm_fe::CstEmitPass >();
+    pm.add< libcasm_fe::AstDumpPass >();
+    pm.add< libcasm_fe::LstDumpPass >();
     pm.add< libcasm_fe::NumericExecutionPass >();
     pm.add< libcasm_fe::SymbolicExecutionPass >();
 
@@ -193,21 +200,35 @@ int main( int argc, const char* argv[] )
 
     // set pass-specific configurations
 
-    pm.set< libcasm_fe::SourceToAstPass >(
-        [&]( libcasm_fe::SourceToAstPass& pass ) { pass.setDebug( ast_parse_debug ); } );
+    pm.set< libcasm_fe::SourceToCstPass >(
+        [ & ]( libcasm_fe::SourceToCstPass& pass ) { pass.setDebug( parse_debug ); } );
 
-    pm.set< libcasm_fe::NumericExecutionPass >( [&]( libcasm_fe::NumericExecutionPass& pass ) {
+    pm.set< libcasm_fe::NumericExecutionPass >( [ & ]( libcasm_fe::NumericExecutionPass& pass ) {
         // pass.setDumpUpdates( flag_dump_updates );
     } );
 
-    pm.set< libcasm_fe::SymbolicExecutionPass >( [&]( libcasm_fe::SymbolicExecutionPass& pass ) {
+    pm.set< libcasm_fe::SymbolicExecutionPass >( [ & ]( libcasm_fe::SymbolicExecutionPass& pass ) {
         if( outputPath.size() != 0 )
         {
             pass.setOutputPath( outputPath.front() );
         }
     } );
 
-    pm.set< libcasm_fe::AstDumpDotPass >( [&]( libcasm_fe::AstDumpDotPass& pass ) {
+    pm.set< libcasm_fe::CstDumpPass >( [ & ]( libcasm_fe::CstDumpPass& pass ) {
+        if( outputPath.size() != 0 )
+        {
+            pass.setOutputPath( outputPath.front() );
+        }
+    } );
+
+    pm.set< libcasm_fe::AstDumpPass >( [ & ]( libcasm_fe::AstDumpPass& pass ) {
+        if( outputPath.size() != 0 )
+        {
+            pass.setOutputPath( outputPath.front() );
+        }
+    } );
+
+    pm.set< libcasm_fe::LstDumpPass >( [ & ]( libcasm_fe::LstDumpPass& pass ) {
         if( outputPath.size() != 0 )
         {
             pass.setOutputPath( outputPath.front() );
