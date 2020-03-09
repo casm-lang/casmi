@@ -143,6 +143,7 @@ int main( int argc, const char* argv[] )
     pm.add< libcasm_fe::AstDumpDotPass >();
     pm.add< libcasm_fe::AstDumpSourcePass >();
     pm.add< libcasm_fe::NumericExecutionPass >();
+    pm.add< libcasm_fe::SymbolicExecutionPass >();
 
     for( auto id : pm.passes() )
     {
