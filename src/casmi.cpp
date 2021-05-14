@@ -200,6 +200,13 @@ int main( int argc, const char* argv[] )
         // pass.setDumpUpdates( flag_dump_updates );
     } );
 
+    pm.set< libcasm_fe::SymbolicExecutionPass >( [&]( libcasm_fe::SymbolicExecutionPass& pass ) {
+        if( outputPath.size() != 0 )
+        {
+            pass.setOutputPath( outputPath.front() );
+        }
+    } );
+
     pm.set< libcasm_fe::AstDumpDotPass >( [&]( libcasm_fe::AstDumpDotPass& pass ) {
         if( outputPath.size() != 0 )
         {
