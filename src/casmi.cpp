@@ -143,6 +143,7 @@ int main( int argc, const char* argv[] )
     pm.add< libcasm_fe::AstDumpDotPass >();
     pm.add< libcasm_fe::AstDumpSourcePass >();
     pm.add< libcasm_fe::NumericExecutionPass >();
+    pm.add< libcasm_fe::SymbolicExecutionPass >();
 
     for( auto id : pm.passes() )
     {
@@ -197,6 +198,13 @@ int main( int argc, const char* argv[] )
 
     pm.set< libcasm_fe::NumericExecutionPass >( [&]( libcasm_fe::NumericExecutionPass& pass ) {
         // pass.setDumpUpdates( flag_dump_updates );
+    } );
+
+    pm.set< libcasm_fe::SymbolicExecutionPass >( [&]( libcasm_fe::SymbolicExecutionPass& pass ) {
+        if( outputPath.size() != 0 )
+        {
+            pass.setOutputPath( outputPath.front() );
+        }
     } );
 
     pm.set< libcasm_fe::AstDumpDotPass >( [&]( libcasm_fe::AstDumpDotPass& pass ) {
