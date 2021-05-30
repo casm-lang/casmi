@@ -42,11 +42,5 @@ endif
 INCLUDE = $(CONFIG)/.cmake/config.mk
 include $(INCLUDE)
 
-ifeq ($(ENV_OSYS),Windows)
-  BINARY := $(OBJ)\\$(TARGET)
-else
-  BINARY := $(OBJ)/$(TARGET)
-endif
-
-ENV_FLAGS  = $(ENV_SET) CASM_ARG_PRE=--ast-exec &&
-ENV_FLAGS += $(ENV_SET) CASM="$(BINARY)" &&
+ENV_FLAGS  = $(ENV_SET) CASM_ARG_PRE=--ast-exec $(ENV_CMD)
+ENV_FLAGS += $(ENV_SET) CASM=$(OBJ)$(ENV_SEP)$(TARGET) $(ENV_CMD)
