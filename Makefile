@@ -43,4 +43,4 @@ INCLUDE = $(CONFIG)/.cmake/config.mk
 include $(INCLUDE)
 
 ENV_FLAGS  = $(ENV_SET) CASM_ARG_PRE=--ast-exec $(ENV_CMD)
-ENV_FLAGS += $(ENV_SET) CASM="$(OBJ)$(ENV_OSEP)$(TARGET)" $(ENV_CMD)
+ENV_FLAGS += $(ENV_SET) CASM="'$(OBJ)$(ENV_SEP)$(TARGET)'" $(ENV_CMD)
