@@ -1,11 +1,9 @@
 //
-//  Copyright (C) 2014-2021 CASM Organization <https://casm-lang.org>
+//  Copyright (C) 2014-2022 CASM Organization <https://casm-lang.org>
 //  All rights reserved.
 //
-//  Developed by: Philipp Paulweber
-//                Emmanuel Pescosta
-//                Florian Hahn
-//                <https://github.com/casm-lang/casmi>
+//  Developed by: Philipp Paulweber et al.
+//                <https://github.com/casm-lang/casmi/graphs/contributors>
 //
 //  This file is part of casmi.
 //
