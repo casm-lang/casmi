@@ -131,6 +131,125 @@ int main( int argc, const char* argv[] )
             return 0;
         } );
 
+    std::unordered_map< std::string, std::string > inFunctions;
+    options.add(
+        "in",
+        libstdhl::Args::REQUIRED,
+        "TBA <val>",
+        [ &log, &inFunctions ]( const char* arg ) {
+            std::string argument( arg );
+            std::vector< std::string > in;
+            libstdhl::String::split( argument, ":=", in );
+
+            std::string value = "";
+            if( in.size() == 1 )
+            {
+                value = "<keyboard>";
+            }
+            else if( in.size() == 2 )
+            {
+                value = in[ 1 ];
+            }
+            else
+            {
+                log.error(
+                    "invalid '--in' argument '" + argument + "', use format <location>:=<value>" );
+                log.debug(
+                    "'--in " + argument + "' has size '" + std::to_string( in.size() ) + "'" );
+                return 1;
+            }
+            const auto& location = in[ 0 ];
+
+            log.debug( "'--in " + argument + "' -> loc: '" + location + "'" );
+            log.debug( "'--in " + argument + "' -> val: '" + value + "'" );
+
+            u1 valid = true;
+            if( location.size() == 0 )
+            {
+                log.error(
+                    "invalid '--in' argument '" + argument + "', <location> part cannot be empty" );
+                valid = false;
+            }
+
+            if( value.size() == 0 )
+            {
+                log.error(
+                    "invalid '--in' argument '" + argument + "', <value> part cannot be empty" );
+                valid = false;
+            }
+
+            if( valid )
+            {
+                inFunctions.emplace( location, value );
+                return 0;
+            }
+            else
+            {
+                return 1;
+            }
+        },
+        "location>:=<value" );
+
+    std::unordered_map< std::string, std::string > outFunctions;
+    options.add(
+        "out",
+        libstdhl::Args::REQUIRED,
+        "TBA <val>",
+        [ &log, &outFunctions ]( const char* arg ) {
+            std::string argument( arg );
+            std::vector< std::string > out;
+            libstdhl::String::split( argument, ":=", out );
+
+            std::string value = "";
+            if( out.size() == 1 )
+            {
+                value = "stream://stdout";
+            }
+            else if( out.size() == 2 )
+            {
+                value = out[ 1 ];
+            }
+            else
+            {
+                log.error(
+                    "invalid '--out' argument '" + argument + "', use format <location>:=<value>" );
+                log.debug(
+                    "'--out " + argument + "' has size '" + std::to_string( out.size() ) + "'" );
+                return 1;
+            }
+            const auto& location = out[ 0 ];
+
+            log.debug( "'--out " + argument + "' -> loc: '" + location + "'" );
+            log.debug( "'--out " + argument + "' -> val: '" + value + "'" );
+
+            u1 valid = true;
+            if( location.size() == 0 )
+            {
+                log.error(
+                    "invalid '--out' argument '" + argument +
+                    "', <location> part cannot be empty" );
+                valid = false;
+            }
+
+            if( value.size() == 0 )
+            {
+                log.error(
+                    "invalid '--out' argument '" + argument + "', <value> part cannot be empty" );
+                valid = false;
+            }
+
+            if( valid )
+            {
+                outFunctions.emplace( location, value );
+                return 0;
+            }
+            else
+            {
+                return 1;
+            }
+        },
+        "location>:=<value" );
+
     // options.add(
     //     'd',
     //     "dump-updates",
@@ -197,6 +316,11 @@ int main( int argc, const char* argv[] )
     pm.setDefaultPass< libcasm_fe::NumericExecutionPass >();
 
     // set pass-specific configurations
+
+    pm.set< libcasm_fe::ProjectResolverPass >( [ & ]( libcasm_fe::ProjectResolverPass& pass ) {
+        pass.setInFunctions( inFunctions );
+        pass.setOutFunctions( outFunctions );
+    } );
 
     pm.set< libcasm_fe::SourceToCstPass >(
         [ & ]( libcasm_fe::SourceToCstPass& pass ) { pass.setDebug( parse_debug ); } );
