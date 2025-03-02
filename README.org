@@ -20,6 +20,16 @@
 #   You should have received a copy of the GNU General Public License
 #   along with casmi. If not, see <http://www.gnu.org/licenses/>.
 # 
+
+#+begin_html
+<h4>
+⚠️
+This repository has been archived and its development work moved to the
+<a href="https://github.com/sealangdotorg/sea">SEA language</a> project.
+<hr>
+</h4>
+#+end_html
+
 [[https://github.com/casm-lang/casm-lang.logo/raw/master/etc/headline.png]]
 
 #+options: toc:nil
